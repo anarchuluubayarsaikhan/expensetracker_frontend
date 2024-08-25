@@ -34,6 +34,7 @@ module.exports = {
           "text-slate-600": "#475569",
           "text-slate-700": "#334155",
           "text-base": "#1F2937",
+          "border-slate-200": "#E2E8F0"
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
