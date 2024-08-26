@@ -19,7 +19,6 @@ export function Header () {
             </div>
             <div className="flex gap-6 items-center">
                 <Dialogs/>
-                
                 <Avatar>
                     <AvatarImage src="https://github.com/shadcn.png"className="w-7 h-7 rounded-xl"/>
                     <AvatarFallback>CN</AvatarFallback>
