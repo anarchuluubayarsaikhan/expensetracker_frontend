@@ -29,8 +29,9 @@ import { Addcategory } from "./addcategory"
 export function Tabscontents () { 
     const [date, setDate] = useState()
     return (
-        <div className="flex-1 flex flex-col gap-6">
-            <Textarea  placeholder="Amount $ 000.00" />
+        <div className="flex flex-col gap-6">
+            <Textarea  placeholder="Amount 
+            $ 000.00" />
             <Select>
                 <SelectTrigger >
                     <SelectValue placeholder="Find or choose category" />
