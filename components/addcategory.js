@@ -12,13 +12,14 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-  } from "@/components/ui/popover"
+} from "@/components/ui/popover"
 
 
 import { Input } from "@/components/ui/input"
-import { Button } from "./ui/button";
-import { Anchor, Binary, BookCheck, ChartNoAxesColumnIncreasing, CircleAlert, CircleGauge, CircleHelp, Citrus, Contact, ContactRound, FileDigit, FileImage, Globe, Hourglass, House, HousePlus, Leaf, ListPlus, LoaderPinwheel, MessagesSquare, Mic, NotepadText, Pencil, Scroll, Sheet, TrainTrack, Watch, Waypoints, Wine, ZoomIn } from "lucide-react";
+import { Anchor, Binary, BookCheck, ChartNoAxesColumnIncreasing, Check, CircleAlert, CircleGauge, CircleHelp, Citrus, Contact, ContactRound, FileDigit, FileImage, Globe, Hourglass, House, HousePlus, Leaf, ListPlus, LoaderPinwheel, MessagesSquare, Mic, NotepadText, Pencil, Scroll, Sheet, TrainTrack, Watch, Waypoints, Wine, ZoomIn } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button"
+
 const icons = [
     {
         value: "house",
@@ -142,11 +143,38 @@ const icons = [
     }
 ]
 
+const colors = [
+    {name: "blue",
+     value: "#0166FF"
+    },
+    {name: "sky",
+     value: "#01B3FF"
+    },
+    {name: "green",
+     value: "#41CC00"
+    },
+    {name: "yellow",
+     value: "#F9D100"
+    },
+    {name: "orange",
+     value: "#FF7B01"
+    },
+    {name: "violet",
+     value: "#AE01FF"
+    },
+    {name: "red",
+     value: "#FF0101"
+    },
+]
+
 
 
 export function Addcategory() {
     const [selectedicon, setSelectedicon] = useState(<CircleHelp strokeWidth={3} />)
-   
+    const [selectedColor, setSelectedColor] = useState()
+
+    console.log({selectedicon})
+
     return (
         <Dialog>
             <DialogTrigger> <Button >Add category</Button></DialogTrigger>
@@ -156,27 +184,29 @@ export function Addcategory() {
                     <DialogDescription>
 
 
-                       <div className="flex gap-3">
+                        <div className="flex gap-3">
                             <Popover>
                                 <PopoverTrigger>{selectedicon}</PopoverTrigger>
-                                
-                                <PopoverContent className="bg-white grid grid-cols-6 gap-6">{icons.map((icon) => (
-                                    <div value={icon.value} onclick ={() => 
-                                        console.log (setSelectedicon(icon.value))
-                                    
-                                       
-                                        
-                                    }>
-                                        {icon.iconi}
-                                    </div>
+
+                                <PopoverContent className="bg-white grid grid-cols-6 gap-6">
+                                    {icons.map((icon) => (
+                                        <div value={icon.value} onClick={() =>
+                                            setSelectedicon(icon.iconi)
+                                        }>
+                                            {icon.iconi}
+                                        </div>
                                     ))}
+                                    {colors.map((color) => 
+                                    <div className="w-6 h-6 rounded-full" style={{backgroundColor:color.value}} onClick={()=> setSelectedColor(color.name)}>{selectedColor === color.name && <Check/>}</div>
+                                    )}
                                 </PopoverContent>
-                                
-                            
-                            
+
+
+
                             </Popover>
                             <Input type="text" placeholder="Name" />
-                       </div>
+                        </div>
+                        <Button> Add category </Button>
                     </DialogDescription>
                 </DialogHeader>
             </DialogContent>
