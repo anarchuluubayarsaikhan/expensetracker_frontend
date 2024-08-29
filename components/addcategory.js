@@ -3,6 +3,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -144,71 +145,99 @@ const icons = [
 ]
 
 const colors = [
-    {name: "blue",
-     value: "#0166FF"
+    {
+        name: "blue",
+        value: "#0166FF"
     },
-    {name: "sky",
-     value: "#01B3FF"
+    {
+        name: "sky",
+        value: "#01B3FF"
     },
-    {name: "green",
-     value: "#41CC00"
+    {
+        name: "green",
+        value: "#41CC00"
     },
-    {name: "yellow",
-     value: "#F9D100"
+    {
+        name: "yellow",
+        value: "#F9D100"
     },
-    {name: "orange",
-     value: "#FF7B01"
+    {
+        name: "orange",
+        value: "#FF7B01"
     },
-    {name: "violet",
-     value: "#AE01FF"
+    {
+        name: "violet",
+        value: "#AE01FF"
     },
-    {name: "red",
-     value: "#FF0101"
+    {
+        name: "red",
+        value: "#FF0101"
     },
 ]
 
 
 
-export function Addcategory() {
-    const [selectedicon, setSelectedicon] = useState(<CircleHelp strokeWidth={3} />)
-    const [selectedColor, setSelectedColor] = useState()
 
-    console.log({selectedicon})
+export function Addcategory() {
+
+    const [selectedIcon, setSelectedicon] = useState(<CircleHelp strokeWidth={3} />)
+    const [selectedColor, setSelectedColor] = useState("")
+    const [selectedIconi, setSelectedIconi] = useState("")
+    const [selectedName, setselectedName] = useState("")
+    const [open, setOpen] =useState ("")
+
+    function Addcategories () {
+        fetch("http://localhost:4000/", {
+            method: "POST",
+            body: JSON.stringify (
+                {name: selectedName},
+                {icon: selectedIconi},
+                {color: selectedColor}
+            ),
+            headers: { 
+                "Content-type": "application/json; charset=UTF-8"
+            } 
+        })
+    }
+
 
     return (
-        <Dialog>
-            <DialogTrigger> <Button >Add category</Button></DialogTrigger>
+        <Dialog open={open}>
+            <DialogTrigger> 
+                <Button  onClick= {() => setOpen(true)}>Add category</Button>
+            </DialogTrigger>
             <DialogContent className="bg-white border rounded-full">
                 <DialogHeader>
                     <DialogTitle>Add category</DialogTitle>
-                    <DialogDescription>
-
-
-                        <div className="flex gap-3">
-                            <Popover>
-                                <PopoverTrigger>{selectedicon}</PopoverTrigger>
-
-                                <PopoverContent className="bg-white grid grid-cols-6 gap-6">
-                                    {icons.map((icon) => (
-                                        <div value={icon.value} onClick={() =>
-                                            setSelectedicon(icon.iconi)
-                                        }>
-                                            {icon.iconi}
-                                        </div>
-                                    ))}
-                                    {colors.map((color) => 
-                                    <div className="w-6 h-6 rounded-full" style={{backgroundColor:color.value}} onClick={()=> setSelectedColor(color.name)}>{selectedColor === color.name && <Check/>}</div>
-                                    )}
-                                </PopoverContent>
-
-
-
-                            </Popover>
-                            <Input type="text" placeholder="Name" />
-                        </div>
-                        <Button> Add category </Button>
-                    </DialogDescription>
                 </DialogHeader>
+
+                <div className="flex gap-3">
+                    <Popover>
+                        <PopoverTrigger>{selectedIcon}</PopoverTrigger>
+
+                        <PopoverContent className="bg-white grid grid-cols-6 gap-6">
+                            {icons.map((icon) => (
+                                <div value={icon.value} onClick={() => {
+                                    setSelectedicon(icon.iconi),
+                                    setSelectedIconi(icon.value)
+                                }
+                                }>
+                                    {icon.iconi}
+                                </div>
+                            ))}
+                            {colors.map((color) =>
+                                <div className="w-6 h-6 rounded-full" style={{ backgroundColor: color.value }} onClick={() => setSelectedColor(color.name)}>{selectedColor === color.name && <Check />}</div>
+                            )}
+                        </PopoverContent>
+
+
+
+                    </Popover>
+                    <Input type="text" value={selectedName} id="Name" onChange ={(e) => setselectedName(e.target.value)} />
+                </div>
+                <DialogFooter>
+                    <Button >Add category</Button>
+                </DialogFooter>  
             </DialogContent>
         </Dialog>
     )
