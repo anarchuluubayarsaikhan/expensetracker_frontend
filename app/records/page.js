@@ -1,3 +1,5 @@
+import { Addrecord } from "@/components/addrecord"
+
 export default function Records () {
     function Addcategories () {
         fetch("http://localhost:4000/", {
@@ -14,7 +16,7 @@ export default function Records () {
     }
     return (
         <div>
-     
+            <Addrecord/>
         </div>
     )
 }
