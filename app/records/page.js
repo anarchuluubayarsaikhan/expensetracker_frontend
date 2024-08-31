@@ -1,11 +1,433 @@
+"use client"
 import { Record } from "@/components/addrecord";
+import { Anchor, Binary, BookCheck, ChartNoAxesColumnIncreasing, Check, ChevronDown, CircleAlert, CircleGauge, CircleHelp, Citrus, Contact, ContactRound, FileDigit, FileImage, Globe, Hourglass, House, HousePlus, Leaf, ListPlus, LoaderPinwheel, MessagesSquare, Mic, NotepadText, Pencil, PlayIcon, Plus, Scroll, Sheet, TrainTrack, Watch, Waypoints, Wine,  X,  ZoomIn } from "lucide-react";
+import { useState } from "react";
+import { Input } from "@/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+import { Slider } from "@/components/ui/slider"
 
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+  } from "@/components/ui/carousel"
+
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+
+const icons = [
+    {
+        value: "house",
+        iconi: <HousePlus strokeWidth={3} />
+    },
+    {
+        value: "home",
+        iconi: <House strokeWidth={3} />
+    },
+    {
+        value: "nametag",
+        iconi: <Contact strokeWidth={3} />
+    },
+    {
+        value: "card",
+        iconi: <ContactRound strokeWidth={3} />
+    },
+    {
+        value: "stairs",
+        iconi: <ChartNoAxesColumnIncreasing strokeWidth={3} />
+    },
+    {
+        value: "join",
+        iconi: <MessagesSquare strokeWidth={3} />
+    },
+    {
+        value: "picture",
+        iconi: <FileImage strokeWidth={3} />
+    },
+    {
+        value: "zoom",
+        iconi: <ZoomIn strokeWidth={3} />
+    },
+    {
+        value: "microphone",
+        iconi: <Mic strokeWidth={3} />
+    },
+    {
+        value: "excel",
+        iconi: <Sheet strokeWidth={3} />
+    },
+    {
+        value: "notepad",
+        iconi: <NotepadText strokeWidth={3} />
+    },
+    {
+        value: "listplus",
+        iconi: <ListPlus strokeWidth={3} />
+    },
+    {
+        value: "leaf",
+        iconi: <Leaf strokeWidth={3} />
+    },
+    {
+        value: "five",
+        iconi: <FileDigit strokeWidth={3} />
+    },
+    {
+        value: "seven",
+        iconi: <Binary strokeWidth={3} />
+    },
+    {
+        value: "road",
+        iconi: <TrainTrack strokeWidth={3} />
+    },
+    {
+        value: "hourglass",
+        iconi: <Hourglass strokeWidth={3} />
+    },
+    {
+        value: "anchor",
+        iconi: <Anchor strokeWidth={3} />
+    },
+    {
+        value: "bezier",
+        iconi: <Waypoints strokeWidth={3} />
+    },
+    {
+        value: "exclude",
+        iconi: <CircleAlert strokeWidth={3} />
+    },
+    {
+        value: "photo",
+        iconi: <Wine strokeWidth={3} />
+    },
+    {
+        value: "baseball",
+        iconi: <LoaderPinwheel strokeWidth={3} />
+    },
+    {
+        value: "question",
+        iconi: <CircleHelp strokeWidth={3} />
+    },
+    {
+        value: "exam",
+        iconi: <BookCheck strokeWidth={3} />
+    },
+    {
+        value: "watch",
+        iconi: <Watch strokeWidth={3} />
+    },
+    {
+        value: "globe",
+        iconi: <Globe strokeWidth={3} />
+    },
+    {
+        value: "juice",
+        iconi: <Citrus strokeWidth={3} />
+    },
+    {
+        value: "peace",
+        iconi: <CircleGauge strokeWidth={3} />
+    },
+    {
+        value: "toiletpaper",
+        iconi: <Scroll strokeWidth={3} />
+    },
+    {
+        value: "signature",
+        iconi: <Pencil strokeWidth={3} />
+    }
+]
+
+const colors = [
+
+    {
+        name: "blue",
+        value: "#0166FF"
+    },
+    {
+        name: "sky",
+        value: "#01B3FF"
+    },
+    {
+        name: "green",
+        value: "#41CC00"
+    },
+    {
+        name: "yellow",
+        value: "#F9D100"
+    },
+    {
+        name: "orange",
+        value: "#FF7B01"
+    },
+    {
+        name: "violet",
+        value: "#AE01FF"
+    },
+    {
+        name: "red",
+        value: "#FF0101"
+    },
+]
+
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+  } from "@/components/ui/dialog"
+
+  import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+  } from "@/components/ui/popover"
+import { Header } from "@/components/header";
+import { Play } from "next/font/google";
 
 export default function Records () {
+    const [selectedIcon, setSelectedicon] = useState(<CircleHelp strokeWidth={3} />)
+    const [selectedColor, setSelectedColor] = useState("")
+    const [selectedColorValue, setSelectedColorValue] = useState("")
+    const [selectedIconi, setSelectedIconi] = useState("")
+    const [selectedName, setselectedName] = useState("")
+    const [open, setOpen] =useState ("")
     
+    function addcategories () {
+        fetch("http://localhost:4000/categories", {
+            method: "POST",
+            body: JSON.stringify (
+                {name: selectedName,
+                icon: selectedIconi,
+                color: selectedColor
+                }
+            ),
+            
+            headers: { 
+                "Content-type": "application/json; charset=UTF-8"
+            } 
+        })
+        console.log ({selectedName, selectedIconi,selectedColor})
+    }
     return (
-        <div>
-            <Record/>
+        <div className=" max-w-screen-lg m-auto flex flex-col gap-6">
+            <Header/>
+            <div className="flex gap-6 bg-gray-50 py-6" >
+                <div className="flex flex-col gap-6 py-4 px-8 bg-white rounded-xl border">
+                    <div className="font-semibold text-2xl text-black">Records</div>
+                    <Record/> 
+                    <label className="input input-bordered flex items-center gap-2">
+                        <input type="text" className="grow" placeholder="Search" />
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            fill="currentColor"
+                            className="h-4 w-4 opacity-70">
+                            <path
+                            fillRule="evenodd"
+                            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                            clipRule="evenodd" />
+                        </svg>
+                    </label>
+                    <div className="flex flex-col gap-4">
+                        <div className="text-base font-semibold placeholder-primary-text-base">Types</div>
+                        <RadioGroup defaultValue="comfortable">
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="default" id="r1" />
+                                <Label htmlFor="r1">All</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="comfortable" id="r2" />
+                                <Label htmlFor="r2">Income</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="compact" id="r3" />
+                                <Label htmlFor="r3">Expense</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>  
+                    <div className="flex flex-col gap-4">
+                        <div className="flex justify-between">
+                            <div className="text-base font-semibold placeholder-primary-text-base">Category</div>
+                            <button className="font-normal text-base text-primary-text-base/20">Clear</button>
+                        </div>
+                            <button className="flex justify-between items-center">
+                                <div className="flex gap-1 items-center">
+                                    <div >
+                                        <Citrus size={20}/>
+                                    </div>
+                                
+                                    <div className="text-base font-normal text-primary-text-base">Food & Drinks</div>
+                                </div>
+                                <PlayIcon size={16} />
+                            </button>
+                            <div>
+                                <button onClick={()=> setOpen(true)} className="flex gap-2 text-base font-normal text-primary-text-base items-center"><Plus size={20} color="#0166FF"/>Add category</button>
+                                <Dialog open={open} >
+                                    <DialogContent className="bg-white border rounded-xl max-w-[494px]">
+                                        <DialogHeader  className=" border-b border-primary-border-slate-200 py-5 px-4 flex justify-between">
+                                            <DialogTitle>Add category</DialogTitle>
+                                            <DialogDescription>
+                                                <X onClick={()=> setOpen(false)} className="hover:cursor-pointer"/>
+                                            </DialogDescription>
+                                        </DialogHeader>
+
+                                        <div className="flex gap-3">
+                                            <Popover >
+                                                <PopoverTrigger className="py-3 px-4 border rounded-xl flex gap-2" style={{color: selectedColorValue}}>{selectedIcon} <ChevronDown /></PopoverTrigger>
+                                                <PopoverContent className="bg-white p-6 flex flex-col gap-6">
+                                                    <div className=" grid grid-cols-6 gap-6 ">
+                                                        {icons.map((icon) => (
+                                                            <div key={icon.value}  value={icon.value} onClick={() => {
+                                                                setSelectedicon(icon.iconi),
+                                                                setSelectedIconi(icon.value)
+                                                            } 
+                                                            } className="w-6 h-6">
+                                                                {icon.iconi}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <hr></hr>
+                                                    <div className="flex gap-3">
+                                                        {colors.map((color) =>
+                                                            <div key={color.value} className="w-6 h-6 rounded-full" style={{ backgroundColor: color.value }} onClick={() => {setSelectedColor(color.name), setSelectedColorValue(color.value)}}>{selectedColor === color.name && <Check />}</div>
+                                                        )}
+                                                    </div>
+                                                    
+                                                </PopoverContent>
+                                            </Popover>
+                                            <Input type="text" placeholder="Name"  value={selectedName} id="Name" onChange ={(e) => setselectedName(e.target.value)} className="py-3 pl-4 pr-[170px]" />
+                                        </div>
+                                    
+                                        <button  className="bg-primary-green-600 rounded-xl hover:bg-green-900 text-white hover:text-white py-3" onClick={addcategories}>Add category</button>
+                                
+                                    </DialogContent>
+                                </Dialog>
+                            
+                            </div>
+                    </div>
+                    <div className="flex flex-col gap-4">
+                        <div className="text-base font-semibold placeholder-primary-text-base">Amount range</div>
+                        <div className="flex gap-4">
+                             <Input className=" py-3 pl-4 max-w-[114px] rounded-xl" placeholder="0"/>
+                             <Input className="py-3 pl-4 max-w-[114px] rounded-xl"placeholder="1000"/>
+                        </div>
+                        <div>
+                            <Slider defaultValue={[33]} max={100} step={1} className="text-primary-main-blue bg-primary-main-blue"/>
+                            <div className="flex justify-between">
+                                <p>0</p> 1000</div>
+                        </div>
+                    </div>
+                    <div>
+                   
+                    </div>
+                </div>
+                <div className="flex-1 p-6 flex flex-col gap-6">
+                    <div className="flex  justify-between">
+                        <div className="pl-4">
+                            <Carousel>
+                                <CarouselContent>
+                                    <CarouselItem>Last 30 days</CarouselItem>
+                                    
+                                </CarouselContent>
+                                <CarouselPrevious />
+                                <CarouselNext />
+                            </Carousel>
+                        </div>
+                        <div>
+                            <Select>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                    <SelectLabel>Select</SelectLabel>
+                                    <SelectItem value="apple">Newest lately</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                       
+
+                    </div>
+                    <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
+                        <div className="flex items-center space-x-2">
+                            <Checkbox id="terms" />
+                            <label
+                                htmlFor="terms"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                                Select all
+                            </label>
+                        </div>              
+                        <div>35500</div>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        <div className="text-base font-semibold text-black">Today</div>
+                        <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
+                            <div className="flex items-center gap-4">
+                                <Checkbox id="terms" />
+                                <label
+                                    htmlFor="terms"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                   <div className="flex gap-4 items-center">
+                                        <div className="bg-primary-main-blue flex justify-center items-center p-3 rounded-full text-white">
+                                             <ChevronDown size={20}/> 
+                                        </div>
+                                        
+                                        <div className=" flex flex-col gap-1">
+                                            <div className="text-base font-normal text-black">Lending & Renting</div>
+                                            <div className="font-normal text-xs text-gray-500 ">14:00</div>
+                                        </div>
+                                   </div>
+                                </label>
+                            </div>              
+                        <div>1000</div>
+                    </div>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        <div className="text-base font-semibold text-black">Yesterday</div>
+                        <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
+                            <div className="flex items-center gap-4">
+                                <Checkbox id="terms" />
+                                <label
+                                    htmlFor="terms"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                   <div className="flex gap-4 items-center">
+                                        <div className="bg-primary-main-blue flex justify-center items-center p-3 rounded-full text-white">
+                                             <ChevronDown size={20}/> 
+                                        </div>
+                                        
+                                        <div className=" flex flex-col gap-1">
+                                            <div className="text-base font-normal text-black">Lending & Renting</div>
+                                            <div className="font-normal text-xs text-gray-500 ">14:00</div>
+                                        </div>
+                                   </div>
+                                </label>
+                            </div>              
+                        <div>1000</div>
+                    </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
         </div>
+          
+     
     )
 }

@@ -58,12 +58,13 @@ export function  Record () {
     
     return (
         <div>
-            <Button variant="outline" onClick={()=> setOpen(true)}>Add record</Button>
+            <button className="text-white text-base font-normal py-1 px-[98px] rounded-2xl bg-primary-main-blue"  onClick={()=> setOpen(true)}>+ Add</button>
             <Dialog open ={open}>
             <DialogContent className = "bg-white max-w-[792px] rounded-xl">
                 <DialogHeader className="border-b border-primary-border-slate-200 py-5 px-6 flex justify-between">
                     <DialogTitle className="text-xl font-semibold">Add record</DialogTitle>
                     <X onClick={()=> setOpen(false)} className="hover:cursor-pointer"/>
+                    
                 </DialogHeader>
                     <div className="flex gap-6">
                         <div className="flex flex-col gap-6">
@@ -136,9 +137,6 @@ export function  Record () {
                             </div>
                         </div>
                     </div>
-                    
-                
-               
             </DialogContent>
             </Dialog>
         </div>

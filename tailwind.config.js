@@ -36,7 +36,10 @@ module.exports = {
           "text-base": "#1F2937",
           "border-slate-200": "#E2E8F0",
           "green-600": "#16A34A",
-          "text-100": "#F3F4F6"
+          "text-100": "#F3F4F6",
+          "text-500": "#64748B",
+          "text-gray-500": "#6B7280",
+          "text-lime-500": "#84CC16"
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
