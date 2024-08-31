@@ -35,11 +35,14 @@ module.exports = {
           "text-slate-700": "#334155",
           "text-base": "#1F2937",
           "border-slate-200": "#E2E8F0",
-          "green-600": "#16A34A"
+          "green-600": "#16A34A",
+          "text-100": "#F3F4F6"
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          "blue": "#0166FF",
+          "placeholder": "#9CA3AF"
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -48,6 +51,7 @@ module.exports = {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
+          
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",

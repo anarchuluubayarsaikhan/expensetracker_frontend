@@ -4,8 +4,7 @@ import {
     DialogContent,
     DialogFooter,
     DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+    DialogTitle
 } from "@/components/ui/dialog"
 
 import {
@@ -16,7 +15,7 @@ import {
 
 
 import { Input } from "@/components/ui/input"
-import { Anchor, Binary, BookCheck, ChartNoAxesColumnIncreasing, Check, CircleAlert, CircleGauge, CircleHelp, Citrus, Contact, ContactRound, FileDigit, FileImage, Globe, Hourglass, House, HousePlus, Leaf, ListPlus, LoaderPinwheel, MessagesSquare, Mic, NotepadText, Pencil, Scroll, Sheet, TrainTrack, Watch, Waypoints, Wine, ZoomIn } from "lucide-react";
+import { Anchor, Binary, BookCheck, ChartNoAxesColumnIncreasing, Check, ChevronDown, CircleAlert, CircleGauge, CircleHelp, Citrus, Contact, ContactRound, FileDigit, FileImage, Globe, Hourglass, House, HousePlus, Leaf, ListPlus, LoaderPinwheel, MessagesSquare, Mic, NotepadText, Pencil, Scroll, Sheet, TrainTrack, Watch, Waypoints, Wine, X, ZoomIn } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button"
 
@@ -177,10 +176,11 @@ const colors = [
 
 
 
-export function Addcategory() {
+export function Category() {
 
     const [selectedIcon, setSelectedicon] = useState(<CircleHelp strokeWidth={3} />)
     const [selectedColor, setSelectedColor] = useState("")
+    const [selectedColorValue, setSelectedColorValue] = useState("")
     const [selectedIconi, setSelectedIconi] = useState("")
     const [selectedName, setselectedName] = useState("")
     const [open, setOpen] =useState ("")
@@ -201,43 +201,47 @@ export function Addcategory() {
 
 
     return (
-        <Dialog open={open}>
-            <DialogTrigger> 
-                <Button  onClick= {() => setOpen(true)}>Add category</Button>
-            </DialogTrigger>
-            <DialogContent className="bg-white border rounded-full">
-                <DialogHeader>
-                    <DialogTitle>Add category</DialogTitle>
-                </DialogHeader>
+        <div>
+            <Button variant="outline" onClick={()=> setOpen(true)}>Add category</Button>
+            <Dialog open={open} >
+                <DialogContent className="bg-white border rounded-xl max-w-[494px]">
+                    <DialogHeader  className=" border-b border-primary-border-slate-200 py-5 px-4 flex justify-between">
+                        <DialogTitle>Add category</DialogTitle>
+                        <X onClick={()=> setOpen(false)} className="hover:cursor-pointer"/>
+                    </DialogHeader>
 
-                <div className="flex gap-3">
-                    <Popover>
-                        <PopoverTrigger>{selectedIcon}</PopoverTrigger>
-
-                        <PopoverContent className="bg-white grid grid-cols-6 gap-6">
-                            {icons.map((icon) => (
-                                <div value={icon.value} onClick={() => {
-                                    setSelectedicon(icon.iconi),
-                                    setSelectedIconi(icon.value)
-                                }
-                                }>
-                                    {icon.iconi}
+                    <div className="flex gap-3">
+                        <Popover >
+                            <PopoverTrigger className="py-3 px-4 border rounded-xl flex gap-2" style={{color: selectedColorValue}}>{selectedIcon} <ChevronDown /></PopoverTrigger>
+                            <PopoverContent className="bg-white p-6 flex flex-col gap-6">
+                                <div className=" grid grid-cols-6 gap-6 ">
+                                    {icons.map((icon) => (
+                                        <div value={icon.value} onClick={() => {
+                                            setSelectedicon(icon.iconi),
+                                            setSelectedIconi(icon.value)
+                                        } 
+                                        } className="w-6 h-6">
+                                            {icon.iconi}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                            {colors.map((color) =>
-                                <div className="w-6 h-6 rounded-full" style={{ backgroundColor: color.value }} onClick={() => setSelectedColor(color.name)}>{selectedColor === color.name && <Check />}</div>
-                            )}
-                        </PopoverContent>
-
-
-
-                    </Popover>
-                    <Input type="text" value={selectedName} id="Name" onChange ={(e) => setselectedName(e.target.value)} />
-                </div>
-                <DialogFooter>
-                    <Button >Add category</Button>
-                </DialogFooter>  
-            </DialogContent>
-        </Dialog>
+                                <hr></hr>
+                                <div className="flex gap-3">
+                                    {colors.map((color) =>
+                                        <div className="w-6 h-6 rounded-full" style={{ backgroundColor: color.value }} onClick={() => {setSelectedColor(color.name), setSelectedColorValue(color.value)}}>{selectedColor === color.name && <Check />}</div>
+                                    )}
+                                </div>
+                                
+                            </PopoverContent>
+                        </Popover>
+                        <Input type="text" placeholder="Name"  value={selectedName} id="Name" onChange ={(e) => setselectedName(e.target.value)} className="py-3 pl-4 pr-[170px]" />
+                    </div>
+                
+                    <Button variant="outline" className="bg-primary-green-600 rounded-xl hover:bg-green-900 text-white hover:text-white">Add category</Button>
+               
+                </DialogContent>
+            </Dialog>
+        </div>
+       
     )
 }
