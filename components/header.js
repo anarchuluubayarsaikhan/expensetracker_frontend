@@ -23,7 +23,7 @@ export function Header() {
     return (
         <div className="flex place-content-between py-4">
             <div className="flex gap-6 items-center">
-                <Image src="/allpics/Logo2.png" width={27} height={27} className="w-10 h-10" />
+                <Image src="/allpics/Logo2.png" width={27} height={27} className="w-10 h-10" alt="Logo"/>
                 <div className="flex gap-6 items-center">
                     {navs.map((nav) =>
                         <Link href={nav.route} className={`${pathname == nav.route ? "font-bold" : "text-slate-200"} text-base  `} >{nav.name}</Link>

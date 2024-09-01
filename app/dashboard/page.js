@@ -31,18 +31,18 @@ export default function Dashboard () {
                 <Card className="bg-primary-main-blue rounded-xl flex-1 ">
                     <CardHeader>
                         <CardTitle>
-                            <Image src="/allpics/Logowhite.png" width={80} height={30}/>
+                            <Image src="/allpics/Logowhite.png" width={80} height={30} alt="Logo"/>
                         </CardTitle>
                         <CardDescription></CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Image src="/allpics/Shape.png" width={212} height={189} />
+                        <Image src="/allpics/Shape.png" width={212} height={189} alt="Round shape on card"/>
                         <div className="flex justify-between">
                             <div >
                                 <p className="font-normal text-base text-white/50">Cash</p>
                                 <div className="font-semibold text-2xl text-white">10000</div>
                             </div>
-                            <Image src="/allpics/noise.png" width={40} height={40}/>
+                            <Image src="/allpics/noise.png" width={40} height={40} alt="Noise shape on card"/>
                         </div>
                         
                         
@@ -50,7 +50,7 @@ export default function Dashboard () {
                 </Card>
                 <div className="flex gap-6">
                     {cards.map ((card) =>
-                         <Card className="bg-white rounded-xl flex-1">
+                         <Card className="bg-white rounded-xl flex-1" key={card.color}>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 border-b-2 pb-4">
                                     <div className="w-2 h-2 rounded-full" style={{backgroundColor: card.color}}></div>
