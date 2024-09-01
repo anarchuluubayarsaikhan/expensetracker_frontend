@@ -210,6 +210,7 @@ const colors = [
     import 'react-clock/dist/Clock.css';
 
     import dayjs from "dayjs"
+import { IconConverter } from "@/components/iconcovert";
 
     const types = [
         {name: "Expense",
@@ -232,8 +233,8 @@ export default function Records () {
     const [selectedName, setselectedName] = useState("")
     const [opened, setOpened] =useState ("")
     const [categories, setCategories] = useState([])
-    const [recordings, setRecordings] = useState([])
-    console.log (recordings)
+    
+
     
 
 
@@ -247,8 +248,11 @@ export default function Records () {
     const [time, setTime] =useState("")
     const [iconID, setIconID] =useState("")
     const findID = categories.find((item) => item.name === iconID)
-    const formatedDate = dayjs(date).format('MMM DD, YYYY')
+    const formatedDate = dayjs().format('MMM DD, YYYY')
+    const [recordings, setRecordings] = useState([])
+    const [todayrecordings, setTodayRecordings] = useState([])
 
+    
 
    
     function loadCategories () {
@@ -276,6 +280,7 @@ export default function Records () {
                 "Content-type": "application/json; charset=UTF-8"
             } 
         })
+        resetCategories ()
     }
 
 
@@ -297,6 +302,7 @@ export default function Records () {
                 "Content-type": "application/json; charset=UTF-8"
             } 
         })
+        resetRecords ()
     }
 
     function loadRecords () {
@@ -309,6 +315,31 @@ export default function Records () {
         loadRecords ()
     }, [])
 
+    function loadRecordsToday () {
+        fetch(`http://localhost:4000/recordbyday?${formatedDate})}`)
+        .then((res) => {return res.json()})
+        .then ((data) => setTodayRecordings(data))
+    }
+
+    useEffect (() => {
+        loadRecordsToday ()
+    }, [])
+
+    function resetRecords () {
+        setActive("")
+        setDate("")
+        setAmount("")
+        setPayee("")
+        setNote("")
+        setTime("")
+        setIconID("")
+    }
+
+    function resetCategories () {
+        setSelectedColor ("")
+        setselectedName ("")
+        
+    }
     
     return (
         <div className=" max-w-screen-lg m-auto flex flex-col gap-6">
@@ -319,96 +350,97 @@ export default function Records () {
                      <div>
                     <button className="text-white text-base font-normal py-1 px-[98px] rounded-2xl bg-primary-main-blue"  onClick={()=> setOpen(true)}>+ Add</button>
                     <Dialog open ={open}>
-                    <DialogContent className = "bg-white max-w-[792px] rounded-xl">
-                        <DialogHeader className="border-b border-primary-border-slate-200 py-5 px-6 flex justify-between">
-                            <DialogTitle className="text-xl font-semibold">Add record</DialogTitle>
-                            <div>
-                                <X onClick={()=> setOpen(false)} className="hover:cursor-pointer"/>
-                                <DialogDescription></DialogDescription>
-                                </div>
-                        </DialogHeader>
-                            <div className="flex gap-6">
-                                <div className="flex flex-col gap-6">
-                                        <div className="flex">
-                                        {types.map ((type) => 
-                                        <button key={type.value}  style={active === type.value? {backgroundColor:type.color} : {backgroundColor:type.basecolor}}    className="py-2 px-14 rounded-[20px] text-base font-normal -primary-text-100 text-primary-text-base" onClick={()=> {setActive(type.value)}}> {type.name} </button>)}
-                                        </div>
-                                        <div className="flex  flex-col gap-6">
-                                                <Input type="number"  placeholder="₮ 000.00" className="pt-6 pr-[62px] pb-3 pl-4 w-[348px]" onChange={(e)=>setAmount(e.target.value)}  value={amount}/>
-                                                <div className="grid w-full max-w-sm items-center gap-1.5">
-                                                    <Label htmlFor="category">Category</Label>
-                                                    <Select  onValueChange={setIconID}>
-                                                        <SelectTrigger className="w-[348px] py-3">
-                                                            <SelectValue placeholder="Find or choose category" />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="bg-white w-[348px]">
-                                                            <SelectGroup>
-                                                            <SelectLabel>
-                                                                <button className="flex gap-3 items-center"> <CirclePlus className="text-primary-main-blue"/> Add category</button>
-                                                            </SelectLabel>
+                        <DialogContent className = "bg-white max-w-[792px] rounded-xl">
+                            <DialogHeader className="border-b border-primary-border-slate-200 py-5 px-6 flex justify-between">
+                                <DialogTitle className="text-xl font-semibold">Add record</DialogTitle>
+                                <div>
+                                    <X onClick={()=> setOpen(false)} className="hover:cursor-pointer"/>
+                                    <DialogDescription></DialogDescription>
+                                    </div>
+                            </DialogHeader>
+                                <div className="flex gap-6">
+                                    <div className="flex flex-col gap-6">
+                                            <div className="flex">
+                                            {types.map ((type) => 
+                                            <button key={type.value}  style={active === type.value? {backgroundColor:type.color} : {backgroundColor:type.basecolor}}    className="py-2 px-14 rounded-[20px] text-base font-normal -primary-text-100 text-primary-text-base" onClick={()=> {setActive(type.value)}}> {type.name} </button>)}
+                                            </div>
+                                            <div className="flex  flex-col gap-6">
+                                                    <Input type="number"  placeholder="₮ 000.00" className="pt-6 pr-[62px] pb-3 pl-4 w-[348px]" onChange={(e)=>setAmount(e.target.value)}  value={amount}/>
+                                                    <div className="grid w-full max-w-sm items-center gap-1.5">
+                                                        <Label htmlFor="category">Category</Label>
+                                                        <Select  onValueChange={setIconID} >
+                                        
+                                                            <SelectTrigger className="w-[348px] py-3">
+                                                                <SelectValue placeholder="Find or choose category" />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="bg-white w-[348px]">
+                                                                <SelectGroup>
+                                                                <SelectLabel>
+                                                                    <button className="flex gap-3 items-center"> <CirclePlus className="text-primary-main-blue"/> Add category</button>
+                                                                </SelectLabel>
 
-                                                                {categories.map ((cat) => (
-                                                                    <SelectItem key= {cat.id} value={cat.name} >
-                                                                     
-                                                                        <div className="flex items-center gap-3" >
-                                                                            <div style={{color:cat.color}} >{icons.find ((item)=> item.value === cat.icon).iconi}</div>
-                                                                            <div className="text-base font-normal">{cat.name}</div>
-                                                                        </div>
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                            </SelectGroup>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                                <div className="flex gap-3 w-[348px]">
-                                                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                                                        <Label htmlFor="category">Date</Label>
-                                                        <Popover>
-                                                            <PopoverTrigger asChild>
-                                                                <Button
-                                                                variant={"outline"}
-                                                                className={cn(
-                                                                    "w-[168px] h-[48px] justify-start text-left font-normal rounded-xl",
-                                                                    !date && "text-muted-foreground"
+                                                                    {categories.map ((cat) => (
+                                                                        <SelectItem key= {cat.id} value="unassigned">
+                                                                        
+                                                                            <div className="flex items-center gap-3" >
+                                                                                <IconConverter iconname={cat.icon}  style={{color:cat.color}}/>
+                                                                                <div className="text-base font-normal">{cat.name}</div>
+                                                                            </div>
+                                                                        </SelectItem>
+                                                                    )
                                                                 )}
-                                                                >
-                                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                                {date ? format(date, "PPP") : <span>{dayjs().format('MMM DD, YYYY')}</span>}
-                                                                </Button>
-                                                                </PopoverTrigger>
-                                                                <PopoverContent className="w-auto p-0 bg-white">
-                                                                    <Calendar
-                                                                    mode="single"
-                                                                    selected={date}
-                                                                    onSelect={setDate}
-                                                                    initialFocus
-                                                                />
-                                                            </PopoverContent>
-                                                        </Popover>
+                                                                </SelectGroup>
+                                                            </SelectContent>
+                                                        </Select>
                                                     </div>
-                                                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                                                        <Label htmlFor="category">Time</Label>
-                                                        <input type="time" className="w-[168px] py-3 pl-4 border border-black rounded-xl " placeholder={dayjs().format(`HH.mm.A`)} onChange={(e) => setTime (e.target.value)} value={time}/>
+                                                    <div className="flex gap-3 w-[348px]">
+                                                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                                                            <Label htmlFor="category">Date</Label>
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button
+                                                                    variant={"outline"}
+                                                                    className={cn(
+                                                                        "w-[168px] h-[48px] justify-start text-left font-normal rounded-xl",
+                                                                        !date && "text-muted-foreground"
+                                                                    )}
+                                                                    >
+                                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                                    {date ? format(date, "PPP") : <span>{dayjs().format('MMM DD, YYYY')}</span>}
+                                                                    </Button>
+                                                                    </PopoverTrigger>
+                                                                    <PopoverContent className="w-auto p-0 bg-white">
+                                                                        <Calendar
+                                                                        mode="single"
+                                                                        selected={date}
+                                                                        onSelect={setDate}
+                                                                        initialFocus
+                                                                    />
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </div>
+                                                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                                                            <Label htmlFor="category">Time</Label>
+                                                            <input type="time" className="w-[168px] py-3 pl-4 border border-black rounded-xl " placeholder={dayjs().format(`HH.mm.A`)} onChange={(e) => setTime (e.target.value)} value={time}/>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                        </div>
-                                        <div> 
-                                                <button className="py-2 px-[132.5px] rounded-xl text-white bg-primary-main-blue" onClick={ addRecords}>Add record</button>  
-                                        </div>
-                                </div>
-                                <div className="flex flex-col gap-6">
-                                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                                            <Label htmlFor="category">Payee</Label>
-                                            <Input type="text" placeholder="Write here" className="w-[348px] py-3 pl-4" onChange={(e) => setPayee(e.target.value)} value={payee}/>
+                                            </div>
+                                            <div> 
+                                                    <button className="py-2 px-[132.5px] rounded-xl text-white bg-primary-main-blue" onClick={ addRecords}>Add record</button>  
+                                            </div>
                                     </div>
-                                    <div className="grid w-full max-w-sm items-center gap-1.5">
-                                            <Label htmlFor="category">Note</Label>
-                                            <Textarea placeholder="Write here" className="pb-[210px] rounded-xl" onChange ={(e) => setNote(e.target.value)} value={note}/>
+                                    <div className="flex flex-col gap-6">
+                                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                                                <Label htmlFor="category">Payee</Label>
+                                                <Input type="text" placeholder="Write here" className="w-[348px] py-3 pl-4" onChange={(e) => setPayee(e.target.value)} value={payee}/>
+                                        </div>
+                                        <div className="grid w-full max-w-sm items-center gap-1.5">
+                                                <Label htmlFor="category">Note</Label>
+                                                <Textarea placeholder="Write here" className="pb-[210px] rounded-xl" onChange ={(e) => setNote(e.target.value)} value={note}/>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                    </DialogContent>
+                        </DialogContent>
                     </Dialog>
                 </div>
                     <label className="input input-bordered flex items-center gap-2">
@@ -446,16 +478,19 @@ export default function Records () {
                             <div className="text-base font-semibold placeholder-primary-text-base">Category</div>
                             <button className="font-normal text-base text-primary-text-base/20">Clear</button>
                         </div>
+                        {categories.map((category) => 
                             <button className="flex justify-between items-center">
                                 <div className="flex gap-1 items-center">
                                     <div >
                                         <Citrus size={20}/>
                                     </div>
-                                
-                                    <div className="text-base font-normal text-primary-text-base">Food & Drinks</div>
+                                   
+                                    <div className="text-base font-normal text-primary-text-base">{category.name}</div>
+                                           
                                 </div>
                                 <PlayIcon size={16} />
                             </button>
+                            )}  
                             <div>
                                 <button onClick={()=> setOpened(true)} className="flex gap-2 text-base font-normal text-primary-text-base items-center"><Plus size={20} color="#0166FF"/>Add category</button>
                                 <Dialog open={opened} >
@@ -559,6 +594,7 @@ export default function Records () {
                     </div>
                     <div className="flex flex-col gap-3">
                         <div className="text-base font-semibold text-black">Today</div>
+                        {recordings.map((record) => 
                         <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
                             <div className="flex items-center gap-4">
                                 <Checkbox id="terms" />
@@ -572,17 +608,19 @@ export default function Records () {
                                         </div>
                                         
                                         <div className=" flex flex-col gap-1">
-                                            <div className="text-base font-normal text-black">Lending & Renting</div>
-                                            <div className="font-normal text-xs text-gray-500 ">14:00</div>
+                                            <div className="text-base font-normal text-black">Lending and Renting</div>
+                                            <div className="font-normal text-xs text-gray-500 ">{record.time}</div>
                                         </div>
                                    </div>
                                 </label>
                             </div>              
-                        <div>1000</div>
-                    </div>
+                        <div>{record.amount}₮</div>
+                        </div>
+                        )}
                     </div>
                     <div className="flex flex-col gap-3">
                         <div className="text-base font-semibold text-black">Yesterday</div>
+                        {recordings.map((record) => 
                         <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
                             <div className="flex items-center gap-4">
                                 <Checkbox id="terms" />
@@ -597,13 +635,14 @@ export default function Records () {
                                         
                                         <div className=" flex flex-col gap-1">
                                             <div className="text-base font-normal text-black">Lending & Renting</div>
-                                            <div className="font-normal text-xs text-gray-500 ">14:00</div>
+                                            <div className="font-normal text-xs text-gray-500 ">{record.time}</div>
                                         </div>
                                    </div>
                                 </label>
                             </div>              
-                        <div>1000</div>
-                    </div>
+                        <div>{record.amount}</div>
+                        </div>
+                        )}
                     </div>
                     
                 </div>
