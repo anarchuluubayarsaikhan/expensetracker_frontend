@@ -256,6 +256,7 @@ export default function Records() {
     const yesterday = dayjs().subtract(1, 'day').format('MMM DD, YYYY')
     const [recordings, setRecordings] = useState([])
     const [selectedCheckbox, setSelectedCheckbox] = useState("")
+    const [checkedCheckbox, setCheckedCheckbox] = useState(false)
     console.log (selectedCheckbox)
 
 
@@ -610,7 +611,7 @@ export default function Records() {
                                 
                                 <div className="flex items-center gap-4">
                                 
-                                    <Checkbox id={record.id} checked={isChecked} onClick={() => {setSelectedCheckbox(record.id), selectedCheckbox === checkedItem.id? setChecked(true): "" }} />
+                                    <Checkbox id={record.id} checked={isChecked} onClick={() => {setSelectedCheckbox(record.id), selectedCheckbox === checkedItem.id? setCheckedCheckbox(true) : "", checkedCheckbox?  setChecked(true): ""}} />
                                 
                           
                                     <label
