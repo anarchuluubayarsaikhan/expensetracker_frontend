@@ -32,25 +32,25 @@ export default function Dashboard () {
     console.log (amountTotal)
     // const [expenseTotal, setExpenseTotal] =useState("")
     
-    function NewestFirst () {
-        fetch(`http://localhost:4000/dashboard?${nowHour}`)
-        .then((res) => {return res.json()})
-        .then ((data) => setNewestfFirstRecordings(data))
-    } 
+    // function NewestFirst () {
+    //     fetch(`http://localhost:4000/dashboard?${nowHour}`)
+    //     .then((res) => {return res.json()})
+    //     .then ((data) => setNewestfFirstRecordings(data))
+    // } 
 
-    useEffect (() => {
-        NewestFirst ()
-    }, [])
+    // useEffect (() => {
+    //     NewestFirst ()
+    // }, [])
 
-    function TotalIncome () {
-        fetch("http://localhost:4000/income")
-        .then((res) => {return res.json()})
-        .then ((data) => setAmountTotal(data))
-    } 
+    // function TotalIncome () {
+    //     fetch("http://localhost:4000/income")
+    //     .then((res) => {return res.json()})
+    //     .then ((data) => setAmountTotal(data))
+    // } 
 
-    useEffect (() => {
-        TotalIncome ()
-    }, [])
+    // useEffect (() => {
+    //     TotalIncome ()
+    // }, [])
 
     // function TotalExpense () {
     //     fetch("http://localhost:4000/expense")

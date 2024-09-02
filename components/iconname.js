@@ -123,8 +123,8 @@ const icons = [
     }
 ]
 
-export function IconConverter({ iconname }) {
-    const convertedIcon = icons.find(item => item.value === iconname)
+export function IconConverterSecond({ iconName }) {
+    const convertedIcon = icons.find(item => item.value === iconName)
     if (!convertedIcon) {
         null
     } 
