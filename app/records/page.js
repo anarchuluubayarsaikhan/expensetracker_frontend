@@ -1,5 +1,5 @@
 "use client"
-import { Anchor, Binary, BookCheck, ChartNoAxesColumnIncreasing, Check, ChevronDown, CircleAlert, CircleGauge, CircleHelp, Citrus, Contact, ContactRound, FileDigit, FileImage, Globe, Hourglass, House, HousePlus, Leaf, ListPlus, LoaderPinwheel, MessagesSquare, Mic, NotepadText, Pencil, PlayIcon, Plus, Scroll, Sheet, TrainTrack, Watch, Waypoints, Wine,  X,  ZoomIn } from "lucide-react";
+import { Anchor, Binary, BookCheck, ChartNoAxesColumnIncreasing, Check, ChevronDown, CircleAlert, CircleGauge, CircleHelp, Citrus, Contact, ContactRound, FileDigit, FileImage, Globe, Hourglass, House, HousePlus, Leaf, ListPlus, LoaderPinwheel, MessagesSquare, Mic, NotepadText, Pencil, PlayIcon, Plus, Scroll, Sheet, TrainTrack, Trash2, Watch, Waypoints, Wine,  X,  ZoomIn } from "lucide-react";
 import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Slider } from "@/components/ui/slider"
@@ -210,7 +210,7 @@ const colors = [
     import 'react-clock/dist/Clock.css';
 
     import dayjs from "dayjs"
-import { IconConverter } from "@/components/iconcovert";
+    import { IconConverter } from "@/components/iconcovert";
 
     const types = [
         {name: "Expense",
@@ -224,6 +224,7 @@ import { IconConverter } from "@/components/iconcovert";
         basecolor: "#F3F4F6"
     }
     ]
+
 
 export default function Records () {
     const [selectedIcon, setSelectedicon] = useState(<CircleHelp strokeWidth={3} />)
@@ -246,13 +247,13 @@ export default function Records () {
     const [payee, setPayee] =useState("")
     const [note, setNote] =useState("")
     const [time, setTime] =useState("")
-    const [iconID, setIconID] =useState("")
-    const findID = categories.find((item) => item.name === iconID)
-    const formatedDate = dayjs().format('MMM DD, YYYY')
+    const [iconId, setIconId] =useState("")
+    const formatedDate = dayjs(date).format('MMM DD, YYYY')
+    const yesterday = dayjs().subtract(1, 'day').format('MMM DD, YYYY')
     const [recordings, setRecordings] = useState([])
-    const [todayrecordings, setTodayRecordings] = useState([])
+    console.log (iconId)
 
-    
+    const [isChecked, setChecked] = useState(false)
 
    
     function loadCategories () {
@@ -290,13 +291,15 @@ export default function Records () {
             body: JSON.stringify (
                 {alltype: active,
                     amount: amount,
-                    category: findID,
+                    category: iconId,
                     date: formatedDate,
                     time: time,
                     payee: payee,
                     note: note
                 }
+                
             ),
+            
             
             headers: { 
                 "Content-type": "application/json; charset=UTF-8"
@@ -315,15 +318,10 @@ export default function Records () {
         loadRecords ()
     }, [])
 
-    function loadRecordsToday () {
-        fetch(`http://localhost:4000/recordbyday?${formatedDate})}`)
-        .then((res) => {return res.json()})
-        .then ((data) => setTodayRecordings(data))
-    }
+   
 
-    useEffect (() => {
-        loadRecordsToday ()
-    }, [])
+  
+
 
     function resetRecords () {
         setActive("")
@@ -332,7 +330,7 @@ export default function Records () {
         setPayee("")
         setNote("")
         setTime("")
-        setIconID("")
+        setIconId("")
     }
 
     function resetCategories () {
@@ -368,7 +366,7 @@ export default function Records () {
                                                     <Input type="number"  placeholder="₮ 000.00" className="pt-6 pr-[62px] pb-3 pl-4 w-[348px]" onChange={(e)=>setAmount(e.target.value)}  value={amount}/>
                                                     <div className="grid w-full max-w-sm items-center gap-1.5">
                                                         <Label htmlFor="category">Category</Label>
-                                                        <Select  onValueChange={setIconID} >
+                                                        <Select  onValueChange={setIconId} >
                                         
                                                             <SelectTrigger className="w-[348px] py-3">
                                                                 <SelectValue placeholder="Find or choose category" />
@@ -380,7 +378,7 @@ export default function Records () {
                                                                 </SelectLabel>
 
                                                                     {categories.map ((cat) => (
-                                                                        <SelectItem key= {cat.id} value="unassigned">
+                                                                        <SelectItem key= {cat.id} value={cat.id}>
                                                                         
                                                                             <div className="flex items-center gap-3" >
                                                                                 <IconConverter iconname={cat.icon}  style={{color:cat.color}}/>
@@ -582,7 +580,7 @@ export default function Records () {
                     </div>
                     <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="terms" />
+                            <Checkbox id="terms" checked= {isChecked} onClick={()=> setChecked(true)} className={`${isChecked? setChecked(false): isChecked}`} />
                             <label
                                 htmlFor="terms"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -592,14 +590,14 @@ export default function Records () {
                         </div>              
                         <div>35500</div>
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3" >
                         <div className="text-base font-semibold text-black">Today</div>
                         {recordings.map((record) => 
-                        <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
+                        <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl ${record.date===formatedDate? "block" : "hidden"}`}>
                             <div className="flex items-center gap-4">
-                                <Checkbox id="terms" />
+                                <Checkbox id="hi" checked= {isChecked} />
                                 <label
-                                    htmlFor="terms"
+                                    htmlFor={record.id}
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
                                    <div className="flex gap-4 items-center">
@@ -614,16 +612,22 @@ export default function Records () {
                                    </div>
                                 </label>
                             </div>              
-                        <div>{record.amount}₮</div>
+                        <div className={`${record.typesall == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}₮</div>
+                        <div className={`flex gap-4 ${isChecked? "block" : "hidden"}`}>
+                            <Pencil size={28} />
+                            <Trash2 size={28} /> 
+                        </div>
                         </div>
                         )}
                     </div>
                     <div className="flex flex-col gap-3">
+                       
                         <div className="text-base font-semibold text-black">Yesterday</div>
+                    
                         {recordings.map((record) => 
-                        <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
+                        <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl ${record.date===yesterday? "block" : "hidden"}`}>
                             <div className="flex items-center gap-4">
-                                <Checkbox id="terms" />
+                                <Checkbox id="terms" checked= {isChecked}/>
                                 <label
                                     htmlFor="terms"
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -635,12 +639,17 @@ export default function Records () {
                                         
                                         <div className=" flex flex-col gap-1">
                                             <div className="text-base font-normal text-black">Lending & Renting</div>
-                                            <div className="font-normal text-xs text-gray-500 ">{record.time}</div>
+                                            <div className={`font-normal text-xs text-gray-500  }`}>{record.time}</div>
                                         </div>
                                    </div>
                                 </label>
                             </div>              
-                        <div>{record.amount}</div>
+                        <div className={`${record.typesall == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}</div>
+                        <div className={`flex gap-4 ${isChecked? "block" : "hidden"}`}>
+                            <Pencil size={28} />
+                            <Trash2 size={28} />
+                            
+                        </div>
                         </div>
                         )}
                     </div>

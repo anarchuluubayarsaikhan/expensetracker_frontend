@@ -6,12 +6,12 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
 import Image from "next/image";
-
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 
 
 const cards =[
@@ -23,7 +23,45 @@ const cards =[
     },
 ]
 
+
 export default function Dashboard () {
+    const [newestfirstrecordings, setNewestfFirstRecordings] = useState([])
+   
+    const nowHour = dayjs().format('HH:mm')
+    const [amountTotal, setAmountTotal] =useState("")
+    console.log (amountTotal)
+    // const [expenseTotal, setExpenseTotal] =useState("")
+    
+    function NewestFirst () {
+        fetch(`http://localhost:4000/dashboard?${nowHour}`)
+        .then((res) => {return res.json()})
+        .then ((data) => setNewestfFirstRecordings(data))
+    } 
+
+    useEffect (() => {
+        NewestFirst ()
+    }, [])
+
+    function TotalIncome () {
+        fetch("http://localhost:4000/income")
+        .then((res) => {return res.json()})
+        .then ((data) => setAmountTotal(data))
+    } 
+
+    useEffect (() => {
+        TotalIncome ()
+    }, [])
+
+    // function TotalExpense () {
+    //     fetch("http://localhost:4000/expense")
+    //     .then((res) => {return res.json()})
+    //     .then ((data) => setExpenseTotal(data))
+    // } 
+
+    // useEffect (() => {
+    //     TotalExpense ()
+    // }, [])
+
     return (
         <div className=" max-w-screen-lg m-auto flex flex-col gap-6">
             <Header/>
@@ -49,9 +87,14 @@ export default function Dashboard () {
                     </CardContent>
                 </Card>
                 <div className="flex gap-6">
+                
                     {cards.map ((card) =>
                          <Card className="bg-white rounded-xl flex-1" key={card.color}>
-                            <CardHeader>
+                            
+                            
+                   
+                            <>
+                                <CardHeader>
                                 <CardTitle className="flex items-center gap-2 border-b-2 pb-4">
                                     <div className="w-2 h-2 rounded-full" style={{backgroundColor: card.color}}></div>
                                     <div className="font-semibold text-base placeholder-primary-text-slate-900">Your income</div>
@@ -60,16 +103,20 @@ export default function Dashboard () {
                             </CardHeader>
                             <CardContent className="flex gap-4 flex-col">
                              <div className="flex flex-col gap-1">
-                                <p className="text-4xl font-semibold text-black">1,200,000 ₮</p>
+                                <p className="text-4xl font-semibold text-black">1,200,000</p>
                                 <div className="text-lg font-normal text-primary-text-500">Your Income Amount</div>
                              </div>
                              <div className="flex gap-2">
                                 <div className="p-1 aspect-video flex items-center justify-center rounded-full text-white" style={{backgroundColor: card.color}}>{card.icon} </div>
                                 <div> 32% from last month</div>
                              </div>
-                         </CardContent>
+                            </CardContent>
+                            </>
+                        
                         </Card>
+                    
                     )}
+            
                 </div>
             </div>
             <div className="flex gap-6">
@@ -81,6 +128,7 @@ export default function Dashboard () {
                                     <CardDescription></CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex gap-4 flex-col">
+
                                 </CardContent>
                 </Card>
                 <Card className="bg-white rounded-xl flex-1">
@@ -92,7 +140,7 @@ export default function Dashboard () {
                                     <CardDescription></CardDescription>
                                 </CardHeader>
                                 <CardContent >
-                               
+                                    
                                 </CardContent>
                 </Card>
             </div>
@@ -103,21 +151,29 @@ export default function Dashboard () {
                     </CardTitle>
                     <CardDescription></CardDescription>
                 </CardHeader>
-                <CardContent className="flex justify-between">
-                    <div className="flex gap-4">
+                
+                <CardContent >
+                    <div>
+                {newestfirstrecordings.map((firstrec) =>(
+                    <div className="flex justify-between border-b-2 py-5">
+                        <div className="flex gap-4">
                         <div className="p-1 rounded-full aspect-video flex justify-between items-center bg-primary-main-blue"><ArrowUp size={16}/></div>
                         <div className="flex flex-col gap-2">
                             <div className="font-normal text-base text-black">
                                 Lending & Renting
                             </div>
                             <div className="font-normal text-xs">
-                                3 hours ago
+                                {firstrec.time}
                             </div>
                         </div>
                     </div>
-                    <div className="font-semibold text-base text-primary-text-lime-500">1,000₮</div>
-                   
+                    <div className={`text-base font-semibold  ${firstrec.typesall == 'expense' ? "text-red-700" : "text-green-600"}`}>{firstrec.amount}</div>
+                    </div>
+                    ))}
+                    </div>
                 </CardContent>
+               
+
             </Card>
             
             
