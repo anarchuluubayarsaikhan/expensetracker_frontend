@@ -257,9 +257,13 @@ export default function Records() {
     const [recordings, setRecordings] = useState([])
     const [selectedCheckbox, setSelectedCheckbox] = useState("")
     console.log (selectedCheckbox)
-    console.log(recordings)
+
 
     const [isChecked, setChecked] = useState(false)
+
+    const checkedItems = []
+    checkedItems.push ({id: selectedCheckbox})
+    console.log (checkedItems)
 
 
     function loadCategories() {
@@ -368,7 +372,7 @@ export default function Records() {
                                     <div className="flex flex-col gap-6">
                                         <div className="flex">
                                             {types.map((type) =>
-                                                <button key={type.value} style={active === type.value ? { backgroundColor: type.color } : { backgroundColor: type.basecolor }} className="py-2 px-14 rounded-[20px] text-base font-normal -primary-text-100 text-primary-text-base" onClick={() => { setActive(type.value) }}> {type.name} </button>)}
+                                                <button key={type.key} style={active === type.value ? { backgroundColor: type.color } : { backgroundColor: type.basecolor }} className="py-2 px-14 rounded-[20px] text-base font-normal -primary-text-100 text-primary-text-base" onClick={() => { setActive(type.value) }}> {type.name} </button>)}
                                         </div>
                                         <div className="flex  flex-col gap-6">
                                             <Input type="number" placeholder="₮ 000.00" className="pt-6 pr-[62px] pb-3 pl-4 w-[348px]" onChange={(e) => setAmount(e.target.value)} value={amount} />
@@ -386,7 +390,7 @@ export default function Records() {
                                                                 </SelectLabel>
 
                                                                     {categories.map ((cat) => (
-                                                                        <SelectItem key={cat.id} value={cat.id}>
+                                                                        <SelectItem key={cat.key} value={cat.id}>
                                                                         
                                                                             <div className="flex items-center gap-3" >
                                                                                 <IconConverter iconname={cat.icon}  style={{color:cat.color}}/>
@@ -514,7 +518,7 @@ export default function Records() {
                                             <PopoverContent className="bg-white p-6 flex flex-col gap-6">
                                                 <div className=" grid grid-cols-6 gap-6 ">
                                                     {icons.map((icon) => (
-                                                        <div key={icon.value} value={icon.value} onClick={() => {
+                                                        <div key={icon.key} value={icon.value} onClick={() => {
                                                             setSelectedicon(icon.iconi),
                                                                 setSelectedIconi(icon.value)
                                                         }
@@ -526,7 +530,7 @@ export default function Records() {
                                                 <hr></hr>
                                                 <div className="flex gap-3">
                                                     {colors.map((color) =>
-                                                        <div key={color.value} className="w-6 h-6 rounded-full" style={{ backgroundColor: color.value }} onClick={() => { setSelectedColor(color.name), setSelectedColorValue(color.value) }}>{selectedColor === color.name && <Check />}</div>
+                                                        <div key={color.key} className="w-6 h-6 rounded-full" style={{ backgroundColor: color.value }} onClick={() => { setSelectedColor(color.name), setSelectedColorValue(color.value) }}>{selectedColor === color.name && <Check />}</div>
                                                     )}
                                                 </div>
 
@@ -600,10 +604,15 @@ export default function Records() {
                     </div> 
                    <div className="flex flex-col gap-3" >
                         <div className="text-base font-semibold text-black">Today</div>
-                        {recordings.map((record) =>
+                       
+                        {checkedItems.map((checkedItem)=> recordings.map((record) =>
                             <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl ${record.date === today ? "block" : "hidden"}`}>
+                                
                                 <div className="flex items-center gap-4">
-                                    <Checkbox id="hi" checked={isChecked} onClick={() => {setSelectedCheckbox(record.id), selectedCheckbox===record.id? setChecked(true): ""} } />
+                                
+                                    <Checkbox id={record.id} checked={isChecked} onClick={() => {setSelectedCheckbox(record.id), selectedCheckbox === checkedItem.id? setChecked(true): "" }} />
+                                
+                          
                                     <label
                                         htmlFor={record.id}
                                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -622,13 +631,15 @@ export default function Records() {
                                         </div>
                                     </label>
                                 </div>
+                                
                                 <div className={`${record.alltransactiontypes == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}₮</div>
                                 <div className={`flex gap-4 ${isChecked ? "block" : "hidden"}`}>
                                     <Pencil size={28} />
                                     <Trash2 size={28} />
                                 </div>
                             </div>
-                        )}
+                         ))}
+                   
                     </div>
                     <div className="flex flex-col gap-3">
 
