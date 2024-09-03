@@ -255,16 +255,30 @@ export default function Records() {
     const today = dayjs().format('MMM DD, YYYY')
     const yesterday = dayjs().subtract(1, 'day').format('MMM DD, YYYY')
     const [recordings, setRecordings] = useState([])
-    const [selectedCheckbox, setSelectedCheckbox] = useState("")
-    const [checkedCheckbox, setCheckedCheckbox] = useState(false)
-    console.log (selectedCheckbox)
+    const [selectedCheckbox, setSelectedCheckbox] = useState([])
+
 
 
     const [isChecked, setChecked] = useState(false)
 
-    const checkedItems = []
-    checkedItems.push ({id: selectedCheckbox})
-    console.log (checkedItems)
+    function toggleCheckbox (id) {
+        if (selectedCheckbox.includes(id)) {
+            
+            const removed = selectedCheckbox.filter((itemId)=> id !== itemId)
+            setSelectedCheckbox (removed)
+        }
+     
+        else {
+            setSelectedCheckbox(s => [...s, id]) 
+            
+        }}
+
+    
+
+    
+    console.log (selectedCheckbox)
+    
+    
 
 
     function loadCategories() {
@@ -293,7 +307,9 @@ export default function Records() {
                 "Content-type": "application/json; charset=UTF-8"
             }
         })
+        loadCategories()
         resetCategories()
+        
     }
 
 
@@ -317,8 +333,11 @@ export default function Records() {
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
+            
         })
+        loadRecords()
         resetRecords()
+        
     }
 
     function loadRecords() {
@@ -351,6 +370,31 @@ export default function Records() {
         setselectedName("")
 
     }
+    function deleteExpense (id) {
+        fetch(`http://localhost:4000/recordings/${id}`, {
+            method: "DELETE",
+        })
+    }
+
+    function editExpense (id) {
+        const name = prompt('Enter name')
+        fetch(`http://localhost:4000/recordings/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(
+                {
+                    name: name
+                }
+
+            ),
+
+
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+    }
+    
+    
 
     return (
         <div className=" max-w-screen-lg m-auto flex flex-col gap-6">
@@ -606,12 +650,12 @@ export default function Records() {
                    <div className="flex flex-col gap-3" >
                         <div className="text-base font-semibold text-black">Today</div>
                        
-                        {checkedItems.map((checkedItem)=> recordings.map((record) =>
+                        {recordings.map((record) =>
                             <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl ${record.date === today ? "block" : "hidden"}`}>
                                 
                                 <div className="flex items-center gap-4">
                                 
-                                    <Checkbox id={record.id} checked={isChecked} onClick={() => {setSelectedCheckbox(record.id), selectedCheckbox === checkedItem.id? setCheckedCheckbox(true) : "", checkedCheckbox?  setChecked(true): ""}} />
+                                    <Checkbox id={record.id} checked={selectedCheckbox.includes(record.id)} onClick={() => toggleCheckbox (record.id)} />
                                 
                           
                                     <label
@@ -634,12 +678,12 @@ export default function Records() {
                                 </div>
                                 
                                 <div className={`${record.alltransactiontypes == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}₮</div>
-                                <div className={`flex gap-4 ${isChecked ? "block" : "hidden"}`}>
-                                    <Pencil size={28} />
-                                    <Trash2 size={28} />
+                                <div className={`flex gap-4 `}>
+                                    <Pencil size={28} onClick={()=> editExpense (record.id)}/>
+                                    <Trash2 size={28} onClick={() => deleteExpense (record.id)}/>
                                 </div>
                             </div>
-                         ))}
+                         )}
                    
                     </div>
                     <div className="flex flex-col gap-3">
@@ -667,9 +711,9 @@ export default function Records() {
                                     </label>
                                 </div>
                                 <div className={`${record.typesall == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}</div>
-                                <div className={`flex gap-4 ${isChecked ? "block" : "hidden"}`}>
-                                    <Pencil size={28} />
-                                    <Trash2 size={28} />
+                                <div className={`flex gap-4 `}>
+                                    <Pencil size={28} onClick={()=> editExpense (record.id)}/>
+                                    <Trash2 size={28} onClick={() => deleteExpense (record.id)} />
 
                                 </div>
                             </div>
