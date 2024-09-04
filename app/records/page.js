@@ -256,12 +256,10 @@ export default function Records() {
     const yesterday = dayjs().subtract(1, 'day').format('MMM DD, YYYY')
     const [recordings, setRecordings] = useState([])
     const [selectedCheckbox, setSelectedCheckbox] = useState([])
-    const [recordedDate ,setRecorededDate] =useState("")
-   
-
-
-
-    const [isChecked, setChecked] = useState(false)
+    const sortedRecordings = recordings.sort((a, b) => {
+    if (a.date > b.date) {
+        return -1
+    }})
 
     function toggleCheckbox (id) {
         if (selectedCheckbox.includes(id)) {
@@ -669,7 +667,7 @@ export default function Records() {
      
                       <div>
                           
-                          {recordings.map((record, index, array) =>
+                          {sortedRecordings.map((record, index, array) =>
                 
                        <div>
                           
@@ -707,7 +705,7 @@ export default function Records() {
                            </div>
                            
                            <div className={`${record.alltransactiontypes == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}₮</div>
-                           <div className={`flex gap-4 `}>
+                           <div className={`flex gap-4 ${selectedCheckbox.includes(record.id)? "block" : "hidden"}`}>
                                <Pencil size={28} onClick={()=> editExpense (record.id)}/>
                                <Trash2 size={28} onClick={() => deleteExpense (record.id)}/>
                            </div>
