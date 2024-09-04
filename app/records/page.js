@@ -256,6 +256,8 @@ export default function Records() {
     const yesterday = dayjs().subtract(1, 'day').format('MMM DD, YYYY')
     const [recordings, setRecordings] = useState([])
     const [selectedCheckbox, setSelectedCheckbox] = useState([])
+    const [recordedDate ,setRecorededDate] =useState("")
+   
 
 
 
@@ -378,6 +380,7 @@ export default function Records() {
 
     function editExpense (id) {
         const name = prompt('Enter name')
+        
         fetch(`http://localhost:4000/recordings/${id}`, {
             method: "PUT",
             body: JSON.stringify(
@@ -393,6 +396,21 @@ export default function Records() {
             }
         })
     }
+
+    function changeDate (date){
+        if (date === today)
+            return ("Today")
+         else if (date === yesterday) {
+            return ("Yesterday")
+        }
+        else {
+            return (date)
+        }
+    }
+    
+    
+
+    
     
     
 
@@ -446,7 +464,7 @@ export default function Records() {
                                                                 )}
                                                                 </SelectGroup>
                                                             </SelectContent>
-                                                        </Select>
+                                                </Select>
                                             </div>
                                             <div className="flex gap-3 w-[348px]">
                                                 <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -637,7 +655,7 @@ export default function Records() {
                     </div>
                     <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="terms" checked={isChecked} />
+                            <Checkbox id="terms" checked={selectedCheckbox.includes()}  />
                             <label
                                 htmlFor="terms"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -648,78 +666,59 @@ export default function Records() {
                         <div>35500</div>
                     </div> 
                    <div className="flex flex-col gap-3" >
-                        <div className="text-base font-semibold text-black">Today</div>
-                       
-                        {recordings.map((record) =>
-                            <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl ${record.date === today ? "block" : "hidden"}`}>
-                                
-                                <div className="flex items-center gap-4">
-                                
-                                    <Checkbox id={record.id} checked={selectedCheckbox.includes(record.id)} onClick={() => toggleCheckbox (record.id)} />
-                                
+     
+                      <div>
                           
-                                    <label
-                                        htmlFor={record.id}
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        <div className="flex gap-4 items-center">
-                                           
-                                            <div className={`bg-primary-main-blue flex justify-center items-center p-3 rounded-full`} style={{color: record.color}}>
-                                                <IconConverterSecond iconName ={record.icon}/>
-                                            </div>
-        
+                          {recordings.map((record, index, array) =>
+                
+                       <div>
+                          
+                       
+                            <div className={`text-base font-semibold text-black ${array[index].date !== (index>0 ? array[index-1].date : '')? '' : 'hidden'}`}>{ changeDate (record.date)}</div>
+                      
+                            
 
-                                            <div className=" flex flex-col gap-1">
-                                                <div className="text-base font-normal text-black">{record.name}</div>
-                                                <div className="font-normal text-xs text-gray-500 ">{record.time}</div>
-                                            </div>
-                                        </div>
-                                    </label>
-                                </div>
-                                
-                                <div className={`${record.alltransactiontypes == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}₮</div>
-                                <div className={`flex gap-4 `}>
-                                    <Pencil size={28} onClick={()=> editExpense (record.id)}/>
-                                    <Trash2 size={28} onClick={() => deleteExpense (record.id)}/>
-                                </div>
-                            </div>
-                         )}
+
+
+                         <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl `}>
+                           
+                           <div className="flex items-center gap-4">
+                           
+                               <Checkbox id={record.id} checked={selectedCheckbox.includes(record.id)} onClick={() => toggleCheckbox (record.id)} />
+                           
+                     
+                               <label
+                                   htmlFor={record.id}
+                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                               >
+                                   <div className="flex gap-4 items-center">
+                                      
+                                       <div className={`bg-primary-main-blue flex justify-center items-center p-3 rounded-full`} style={{color: record.color}}>
+                                           <IconConverterSecond iconName ={record.icon}/>
+                                       </div>
+   
+
+                                       <div className=" flex flex-col gap-1">
+                                           <div className="text-base font-normal text-black">{record.name}</div>
+                                           <div className="font-normal text-xs text-gray-500 ">{record.time}</div>
+                                       </div>
+                                   </div>
+                               </label>
+                           </div>
+                           
+                           <div className={`${record.alltransactiontypes == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}₮</div>
+                           <div className={`flex gap-4 `}>
+                               <Pencil size={28} onClick={()=> editExpense (record.id)}/>
+                               <Trash2 size={28} onClick={() => deleteExpense (record.id)}/>
+                           </div>
+                       </div>
+                       </div>
+                          )}
+                      </div>
+                 
                    
                     </div>
-                    <div className="flex flex-col gap-3">
-
-                        <div className="text-base font-semibold text-black">Yesterday</div>
-
-                        {recordings.map((record) =>
-                            <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl ${record.date === yesterday ? "block" : "hidden"}`}>
-                                <div className="flex items-center gap-4">
-                                    <Checkbox id="terms" checked={isChecked} />
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        <div className="flex gap-4 items-center">
-                                            <div className={`bg-primary-main-blue flex justify-center items-center p-3 rounded-full`} style={{color: record.color}}>
-                                            <IconConverterSecond iconName ={record.icon}/>
-                                            </div>
-
-                                            <div className=" flex flex-col gap-1">
-                                                <div className="text-base font-normal text-black">{record.name}</div>
-                                                <div className={`font-normal text-xs text-gray-500  }`}>{record.time}</div>
-                                            </div>
-                                        </div>
-                                    </label>
-                                </div>
-                                <div className={`${record.typesall == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}</div>
-                                <div className={`flex gap-4 `}>
-                                    <Pencil size={28} onClick={()=> editExpense (record.id)}/>
-                                    <Trash2 size={28} onClick={() => deleteExpense (record.id)} />
-
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
+                    
                 </div>
             </div>
 
