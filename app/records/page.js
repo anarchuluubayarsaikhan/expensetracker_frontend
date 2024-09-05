@@ -3,6 +3,7 @@ import { Anchor, Binary, BookCheck, ChartNoAxesColumnIncreasing, Check, ChevronD
 import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Slider } from "@/components/ui/slider"
+import { useQueryState } from 'nuqs'
 
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -22,6 +23,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+
+
 
 const icons = [
     {
@@ -229,6 +232,9 @@ const types = [
 ]
 
 
+
+
+
 export default function Records() {
     const [selectedIcon, setSelectedicon] = useState(<CircleHelp strokeWidth={3} />)
     const [selectedColor, setSelectedColor] = useState("")
@@ -243,6 +249,8 @@ export default function Records() {
 
 
 
+
+
     const [open, setOpen] = useState(false)
     const [active, setActive] = useState("")
     const [date, setDate] = useState("")
@@ -251,34 +259,36 @@ export default function Records() {
     const [note, setNote] = useState("")
     const [time, setTime] = useState("")
     const [iconId, setIconId] = useState("")
-    const formatedDate = dayjs(date).format('MMM DD, YYYY')
-    const today = dayjs().format('MMM DD, YYYY')
-    const yesterday = dayjs().subtract(1, 'day').format('MMM DD, YYYY')
+    const formatedDate = dayjs(date).format('YYYY-MM-DD')
+    const today = dayjs().format('YYYY-MM-DD')
+    const yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD')
     const [recordings, setRecordings] = useState([])
     const [selectedCheckbox, setSelectedCheckbox] = useState([])
     const sortedRecordings = recordings.sort((a, b) => {
-    if (a.date > b.date) {
-        return -1
-    }})
-
-    function toggleCheckbox (id) {
-        if (selectedCheckbox.includes(id)) {
-            
-            const removed = selectedCheckbox.filter((itemId)=> id !== itemId)
-            setSelectedCheckbox (removed)
+        if (a.date > b.date) {
+            return -1
         }
-     
+    })
+
+    function toggleCheckbox(id) {
+        if (selectedCheckbox.includes(id)) {
+
+            const removed = selectedCheckbox.filter((itemId) => id !== itemId)
+            setSelectedCheckbox(removed)
+        }
+
         else {
-            setSelectedCheckbox(s => [...s, id]) 
-            
-        }}
+            setSelectedCheckbox(s => [...s, id])
 
-    
+        }
+    }
 
-    
-    console.log (selectedCheckbox)
-    
-    
+
+
+
+    console.log(selectedCheckbox)
+
+
 
 
     function loadCategories() {
@@ -309,7 +319,7 @@ export default function Records() {
         })
         loadCategories()
         resetCategories()
-        
+
     }
 
 
@@ -333,22 +343,43 @@ export default function Records() {
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
-            
+
         })
         loadRecords()
         resetRecords()
-        
+
     }
 
-    function loadRecords() {
-        fetch("http://localhost:4000/recordings")
-            .then((res) => { return res.json() })
-            .then((data) => setRecordings(data))
-    }
 
+
+
+    const [typename, setTypeName] = useQueryState('typename')
+    const [categoryname, setCategoryName] = useQueryState('categoryname')
+
+    function loadList() {
+        if (typename === "all") {
+            fetch("http://localhost:4000/recordings")
+                .then((res) => { return res.json() })
+                .then((data) => setRecordings(data))
+
+        }
+        else {
+            fetch(`http://localhost:4000/type/${typename}/${categoryname}`)
+                .then((res) => { return res.json() })
+                .then((data) => setRecordings(data))
+
+        }
+
+    }
     useEffect(() => {
-        loadRecords()
-    }, [])
+        loadList()
+    }, [typename, categoryname ])
+
+
+
+
+
+
 
 
 
@@ -370,15 +401,15 @@ export default function Records() {
         setselectedName("")
 
     }
-    function deleteExpense (id) {
+    function deleteExpense(id) {
         fetch(`http://localhost:4000/recordings/${id}`, {
             method: "DELETE",
         })
     }
 
-    function editExpense (id) {
+    function editExpense(id) {
         const name = prompt('Enter name')
-        
+
         fetch(`http://localhost:4000/recordings/${id}`, {
             method: "PUT",
             body: JSON.stringify(
@@ -395,22 +426,40 @@ export default function Records() {
         })
     }
 
-    function changeDate (date){
+    function changeDate(date) {
         if (date === today)
             return ("Today")
-         else if (date === yesterday) {
+        else if (date === yesterday) {
             return ("Yesterday")
         }
         else {
             return (date)
         }
     }
-    
-    
 
-    
-    
-    
+    const typessidebar = [
+        {
+            value: "all",
+            id: "r1",
+            typename: "All",
+        },
+        {
+            value: "income",
+            id: "r2",
+            typename: "Income",
+        },
+        {
+            value: "expense",
+            id: "r3",
+            typename: "Expense",
+        },
+    ]
+
+
+
+
+
+
 
     return (
         <div className=" max-w-screen-lg m-auto flex flex-col gap-6">
@@ -439,29 +488,29 @@ export default function Records() {
                                             <Input type="number" placeholder="₮ 000.00" className="pt-6 pr-[62px] pb-3 pl-4 w-[348px]" onChange={(e) => setAmount(e.target.value)} value={amount} />
                                             <div className="grid w-full max-w-sm items-center gap-1.5">
                                                 <Label htmlFor="category">Category</Label>
-                                                <Select  onValueChange={setIconId} >
-                                        
-                                                            <SelectTrigger className="w-[348px] py-3">
-                                                                <SelectValue placeholder="Find or choose category" />
-                                                            </SelectTrigger>
-                                                            <SelectContent className="bg-white w-[348px]">
-                                                                <SelectGroup>
-                                                                <SelectLabel>
-                                                                    <button className="flex gap-3 items-center"> <CirclePlus className="text-primary-main-blue"/> Add category</button>
-                                                                </SelectLabel>
+                                                <Select onValueChange={setIconId} >
 
-                                                                    {categories.map ((cat) => (
-                                                                        <SelectItem key={cat.key} value={cat.id}>
-                                                                        
-                                                                            <div className="flex items-center gap-3" >
-                                                                                <IconConverter iconname={cat.icon}  style={{color:cat.color}}/>
-                                                                                <div className="text-base font-normal">{cat.name}</div>
-                                                                            </div>
-                                                                        </SelectItem>
-                                                                    )
-                                                                )}
-                                                                </SelectGroup>
-                                                            </SelectContent>
+                                                    <SelectTrigger className="w-[348px] py-3">
+                                                        <SelectValue placeholder="Find or choose category" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="bg-white w-[348px]">
+                                                        <SelectGroup>
+                                                            <SelectLabel>
+                                                                <button className="flex gap-3 items-center"> <CirclePlus className="text-primary-main-blue" /> Add category</button>
+                                                            </SelectLabel>
+
+                                                            {categories.map((cat) => (
+                                                                <SelectItem key={cat.key} value={cat.id}>
+
+                                                                    <div className="flex items-center gap-3" >
+                                                                        <IconConverter iconname={cat.icon} style={{ color: cat.color }} />
+                                                                        <div className="text-base font-normal">{cat.name}</div>
+                                                                    </div>
+                                                                </SelectItem>
+                                                            )
+                                                            )}
+                                                        </SelectGroup>
+                                                    </SelectContent>
                                                 </Select>
                                             </div>
                                             <div className="flex gap-3 w-[348px]">
@@ -477,7 +526,7 @@ export default function Records() {
                                                                 )}
                                                             >
                                                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                                                {date ? format(date, "PPP") : <span>{dayjs().format('MMM DD, YYYY')}</span>}
+                                                                {date ? format(date, "PPP") : <span>{dayjs().format('YYYY-MM-DD')}</span>}
                                                             </Button>
                                                         </PopoverTrigger>
                                                         <PopoverContent className="w-auto p-0 bg-white">
@@ -529,19 +578,14 @@ export default function Records() {
                     </label>
                     <div className="flex flex-col gap-4">
                         <div className="text-base font-semibold placeholder-primary-text-base">Types</div>
-                        <RadioGroup defaultValue="comfortable">
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="default" id="r1" />
-                                <Label htmlFor="r1">All</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="comfortable" id="r2" />
-                                <Label htmlFor="r2">Income</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="compact" id="r3" />
-                                <Label htmlFor="r3">Expense</Label>
-                            </div>
+
+                        <RadioGroup defaultValue={typename}>
+                            {typessidebar.map((typesside) =>
+                                <div key={typesside.id} className="flex items-center space-x-2" onClick={() => setTypeName(typesside.value)}>
+                                    <RadioGroupItem value={typesside.value} id={typesside.id} />
+                                    <Label htmlFor={typesside.id}>{typesside.typename}  </Label>
+                                </div>
+                            )}
                         </RadioGroup>
                     </div>
                     <div className="flex flex-col gap-4">
@@ -552,16 +596,16 @@ export default function Records() {
                         {categories.map((category) =>
                             <button key={category.key} className="flex justify-between items-center">
                                 <div className="flex gap-2 items-center">
-                                    <div style={{color: category.color}}>
-                                        <IconConverterSecond iconName ={category.icon}/>
+                                    <div style={{ color: category.color }}>
+                                        <IconConverterSecond iconName={category.icon} />
                                     </div>
 
-                                    <div className="text-base font-normal text-primary-text-base">{category.name}</div>
+                                    <div className="text-base font-normal text-primary-text-base" onClick={() => setCategoryName(category.id)}>{category.name}</div>
 
                                 </div>
                                 <PlayIcon size={16} />
                             </button>
-                        )} 
+                        )}
                         <div>
                             <button onClick={() => setOpened(true)} className="flex gap-2 text-base font-normal text-primary-text-base items-center"><Plus size={20} color="#0166FF" />Add category</button>
                             <Dialog open={opened} >
@@ -662,61 +706,61 @@ export default function Records() {
                             </label>
                         </div>
                         <div>35500</div>
-                    </div> 
-                   <div className="flex flex-col gap-3" >
-     
-                      <div>
-                          
-                          {sortedRecordings.map((record, index, array) =>
-                
-                       <div>
-                          
-                       
-                            <div className={`text-base font-semibold text-black ${array[index].date !== (index>0 ? array[index-1].date : '')? '' : 'hidden'}`}>{ changeDate (record.date)}</div>
-                      
-                            
-
-
-
-                         <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl `}>
-                           
-                           <div className="flex items-center gap-4">
-                           
-                               <Checkbox id={record.id} checked={selectedCheckbox.includes(record.id)} onClick={() => toggleCheckbox (record.id)} />
-                           
-                     
-                               <label
-                                   htmlFor={record.id}
-                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                               >
-                                   <div className="flex gap-4 items-center">
-                                      
-                                       <div className={`bg-primary-main-blue flex justify-center items-center p-3 rounded-full`} style={{color: record.color}}>
-                                           <IconConverterSecond iconName ={record.icon}/>
-                                       </div>
-   
-
-                                       <div className=" flex flex-col gap-1">
-                                           <div className="text-base font-normal text-black">{record.name}</div>
-                                           <div className="font-normal text-xs text-gray-500 ">{record.time}</div>
-                                       </div>
-                                   </div>
-                               </label>
-                           </div>
-                           
-                           <div className={`${record.alltransactiontypes == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}₮</div>
-                           <div className={`flex gap-4 ${selectedCheckbox.includes(record.id)? "block" : "hidden"}`}>
-                               <Pencil size={28} onClick={()=> editExpense (record.id)}/>
-                               <Trash2 size={28} onClick={() => deleteExpense (record.id)}/>
-                           </div>
-                       </div>
-                       </div>
-                          )}
-                      </div>
-                 
-                   
                     </div>
-                    
+                    <div className="flex flex-col gap-3" >
+
+                        <div>
+
+                            {sortedRecordings.map((record, index, array) =>
+
+                                <div>
+
+
+                                    <div className={`text-base font-semibold text-black ${array[index].date !== (index > 0 ? array[index - 1].date : '') ? '' : 'hidden'}`}>{changeDate(record.date)}</div>
+
+
+
+
+
+                                    <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl `}>
+
+                                        <div className="flex items-center gap-4">
+
+                                            <Checkbox id={record.id} checked={selectedCheckbox.includes(record.id)} onClick={() => toggleCheckbox(record.id)} />
+
+
+                                            <label
+                                                htmlFor={record.id}
+                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                            >
+                                                <div className="flex gap-4 items-center">
+
+                                                    <div className={`bg-primary-main-blue flex justify-center items-center p-3 rounded-full`} style={{ color: record.color }}>
+                                                        <IconConverterSecond iconName={record.icon} />
+                                                    </div>
+
+
+                                                    <div className=" flex flex-col gap-1">
+                                                        <div className="text-base font-normal text-black">{record.name}</div>
+                                                        <div className="font-normal text-xs text-gray-500 ">{record.time}</div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        <div className={`${record.alltransactiontypes == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}₮</div>
+                                        <div className={`flex gap-4 ${selectedCheckbox.includes(record.id) ? "block" : "hidden"}`}>
+                                            <Pencil size={28} onClick={() => editExpense(record.id)} />
+                                            <Trash2 size={28} onClick={() => deleteExpense(record.id)} />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+
+                    </div>
+
                 </div>
             </div>
 
