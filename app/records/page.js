@@ -4,15 +4,11 @@ import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Slider } from "@/components/ui/slider"
 import { useQueryState } from 'nuqs'
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css fil
+import { DateRangePicker } from 'react-date-range';
 
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel"
 
 import {
     Select,
@@ -251,6 +247,9 @@ export default function Records() {
 
 
 
+
+
+
     const [open, setOpen] = useState(false)
     const [active, setActive] = useState("")
     const [date, setDate] = useState("")
@@ -281,6 +280,11 @@ export default function Records() {
             setSelectedCheckbox(s => [...s, id])
 
         }
+    }
+
+
+    function Allchecked () {
+        selectedCheckbox
     }
 
 
@@ -357,13 +361,19 @@ export default function Records() {
     const [categoryname, setCategoryName] = useQueryState('categoryname')
 
     function loadList() {
-        if (typename === "all") {
+        if (typename === null) {
             fetch("http://localhost:4000/recordings")
                 .then((res) => { return res.json() })
                 .then((data) => setRecordings(data))
 
         }
-        else {
+        else if (categoryname===null) {
+            fetch(`http://localhost:4000/types/${typename}`)
+                .then((res) => { return res.json() })
+                .then((data) => setRecordings(data))
+        }
+
+        else  {
             fetch(`http://localhost:4000/type/${typename}/${categoryname}`)
                 .then((res) => { return res.json() })
                 .then((data) => setRecordings(data))
@@ -374,16 +384,6 @@ export default function Records() {
     useEffect(() => {
         loadList()
     }, [typename, categoryname ])
-
-
-
-
-
-
-
-
-
-
 
 
     function resetRecords() {
@@ -439,7 +439,7 @@ export default function Records() {
 
     const typessidebar = [
         {
-            value: "all",
+            value: null,
             id: "r1",
             typename: "All",
         },
@@ -454,7 +454,6 @@ export default function Records() {
             typename: "Expense",
         },
     ]
-
 
 
 
@@ -670,14 +669,10 @@ export default function Records() {
                 <div className="flex-1 p-6 flex flex-col gap-6">
                     <div className="flex  justify-between">
                         <div className="pl-4">
-                            <Carousel>
-                                <CarouselContent>
-                                    <CarouselItem>Last 30 days</CarouselItem>
-
-                                </CarouselContent>
-                                <CarouselPrevious />
-                                <CarouselNext />
-                            </Carousel>
+                        {/* <DateRangePicker
+                            ranges={[selectionRange]}
+                            onChange={this.handleSelect}
+                         /> */}
                         </div>
                         <div>
                             <Select>
@@ -697,7 +692,7 @@ export default function Records() {
                     </div>
                     <div className="flex justify-between items-center bg-white py-3 px-6 rounded-xl">
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="terms" checked={selectedCheckbox.includes()}  />
+                            <Checkbox id="terms"  onClick={() => Allchecked()} />
                             <label
                                 htmlFor="terms"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
