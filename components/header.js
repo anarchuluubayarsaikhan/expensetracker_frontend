@@ -4,6 +4,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { Button } from "@/components/ui/button"
 import Link from "next/link";
 import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 const navs = [
     {
@@ -19,6 +20,7 @@ const navs = [
 
 export function Header() {
     const pathname = usePathname()
+    const router = useRouter()
 
     return (
         <div className="flex place-content-between py-4">
@@ -31,7 +33,7 @@ export function Header() {
                 </div>
             </div>
             <div className="flex gap-6 items-center">
-                <Button className="bg-primary-main-blue hover:bg-blue-900 text-white rounded-3xl">+ Record</Button>
+                <Button className="bg-primary-main-blue hover:bg-blue-900 text-white rounded-3xl" onClick={()=> router.push(`?show=dialog`)}>+ Record</Button>
                 <Avatar>
                     <AvatarImage src="https://github.com/shadcn.png" className="w-7 h-7 rounded-xl" />
                     <AvatarFallback>CN</AvatarFallback>

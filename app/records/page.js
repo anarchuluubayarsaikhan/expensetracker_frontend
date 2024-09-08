@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Slider } from "@/components/ui/slider"
 import { useQueryState } from 'nuqs'
-import 'react-date-range/dist/styles.css'; // main style file
-import 'react-date-range/dist/theme/default.css'; // theme css fil
-import { DateRangePicker } from 'react-date-range';
+import { useSearchParams } from 'next/navigation'
+
 
 import { Checkbox } from "@/components/ui/checkbox"
 
@@ -15,7 +14,6 @@ import {
     SelectContent,
     SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
@@ -176,41 +174,19 @@ const colors = [
         value: "#FF0101"
     },
 ]
-
-import { Textarea } from "@/components/ui/textarea"
-
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
 import { Header } from "@/components/header";
-
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription
-} from "@/components/ui/dialog"
-
-import { cn } from "@/lib/utils"
-
-import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
-
-import { CirclePlus } from "lucide-react"
-
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
-
 import dayjs from "dayjs"
-import { IconConverter } from "@/components/iconcovert";
-import { IconConverterSecond, IconNameConverter } from "@/components/iconname";
+import { IconConverterSecond} from "@/components/iconname";
+import { DatePickerWithRange } from "@/components/daterange";
+import { Addrecord } from "@/components/dialog";
+import { Addcategory } from "@/components/addcategory";
+import { Sidebar } from "@/components/sidebar";
+import { Addcategorybutton } from "@/components/categorybutton";
+import { useRouter } from 'next/navigation'
 
 const types = [
     {
@@ -232,30 +208,18 @@ const types = [
 
 
 export default function Records() {
-    const [selectedIcon, setSelectedicon] = useState(<CircleHelp strokeWidth={3} />)
     const [selectedColor, setSelectedColor] = useState("")
     const [selectedColorValue, setSelectedColorValue] = useState("")
     const [selectedIconi, setSelectedIconi] = useState("")
     const [selectedName, setselectedName] = useState("")
-    const [opened, setOpened] = useState("")
     const [categories, setCategories] = useState([])
-
-
-
-
-
-
-
-
-
-
-
-    const [open, setOpen] = useState(false)
-    const [active, setActive] = useState("")
+    const [selectedIcon, setSelectedicon] = useState(<CircleHelp strokeWidth={3} />)
+    
     const [date, setDate] = useState("")
     const [amount, setAmount] = useState("")
     const [payee, setPayee] = useState("")
     const [note, setNote] = useState("")
+    const [activestate, setActive] = useState("")
     const [time, setTime] = useState("")
     const [iconId, setIconId] = useState("")
     const formatedDate = dayjs(date).format('YYYY-MM-DD')
@@ -263,11 +227,27 @@ export default function Records() {
     const yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD')
     const [recordings, setRecordings] = useState([])
     const [selectedCheckbox, setSelectedCheckbox] = useState([])
+    const [editingRecords, setEditingRecords] = useState()
+
     const sortedRecordings = recordings.sort((a, b) => {
         if (a.date > b.date) {
             return -1
         }
     })
+    const searchParams = useSearchParams()
+    const idedited = searchParams.get('id')
+
+    const filterByDates = [
+        {datefilter: "Newest lately", 
+        value: "newest"
+        },
+        {datefilter: "Oldest lately",
+        value: "oldest"
+        }
+    ]
+
+    
+
 
     function toggleCheckbox(id) {
         if (selectedCheckbox.includes(id)) {
@@ -275,25 +255,25 @@ export default function Records() {
             const removed = selectedCheckbox.filter((itemId) => id !== itemId)
             setSelectedCheckbox(removed)
         }
-
         else {
             setSelectedCheckbox(s => [...s, id])
 
         }
     }
 
-
     function Allchecked () {
-        selectedCheckbox
+        if (sortedRecordings.length === selectedCheckbox.length){
+            setSelectedCheckbox([])
+           
+        }
+        else  {
+            sortedRecordings.map ((rec) =>(
+                setSelectedCheckbox(s =>[...s, rec.id])
+            )
+            )
+        }
+        
     }
-
-
-
-
-    console.log(selectedCheckbox)
-
-
-
 
     function loadCategories() {
         fetch("http://localhost:4000/categories")
@@ -332,7 +312,7 @@ export default function Records() {
             method: "POST",
             body: JSON.stringify(
                 {
-                    alltype: active,
+                    alltype: activestate,
                     amount: amount,
                     category: iconId,
                     date: formatedDate,
@@ -349,32 +329,42 @@ export default function Records() {
             }
 
         })
-        loadRecords()
         resetRecords()
 
     }
-
-
+   
+    useEffect (() => {
+       
+        if (editingRecords) {
+            const add = router.push(`?show=dialog&id=${editingRecords.id}`)
+            setActive(editingRecords.alltransactiontypes)
+            setDate(editingRecords.date)
+            setAmount(editingRecords.amount)
+            setPayee(editingRecords.payee)
+            setNote(editingRecords.note)
+            setTime(editingRecords.time)
+        }
+        else{
+            router.push(`?`)
+        }
+    },[editingRecords])
 
 
     const [typename, setTypeName] = useQueryState('typename')
     const [categoryname, setCategoryName] = useQueryState('categoryname')
+    const [newest, setNewest] = useQueryState('date')
+    const router = useRouter()
 
     function loadList() {
+
         if (typename === null) {
             fetch("http://localhost:4000/recordings")
                 .then((res) => { return res.json() })
                 .then((data) => setRecordings(data))
 
         }
-        else if (categoryname===null) {
-            fetch(`http://localhost:4000/types/${typename}`)
-                .then((res) => { return res.json() })
-                .then((data) => setRecordings(data))
-        }
-
         else  {
-            fetch(`http://localhost:4000/type/${typename}/${categoryname}`)
+            fetch(`http://localhost:4000/types/${typename}/${categoryname}`)
                 .then((res) => { return res.json() })
                 .then((data) => setRecordings(data))
 
@@ -407,19 +397,27 @@ export default function Records() {
         })
     }
 
-    function editExpense(id) {
-        const name = prompt('Enter name')
-
-        fetch(`http://localhost:4000/recordings/${id}`, {
+   
+   console.log (editExpense)
+    function editExpense() {
+       
+        fetch(`http://localhost:4000/recordings/${idedited}`, {
             method: "PUT",
             body: JSON.stringify(
                 {
-                    name: name
+                    alltype: activestate,
+                    amount: amount,
+                    category: iconId,
+                    date: formatedDate,
+                    time: time,
+                    payee: payee,
+                    note: note
+
+                   
+                    
                 }
 
             ),
-
-
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
@@ -467,100 +465,8 @@ export default function Records() {
                 <div className="flex flex-col gap-6 py-4 px-8 bg-white rounded-xl border">
                     <div className="font-semibold text-2xl text-black">Records</div>
                     <div>
-                        <button className="text-white text-base font-normal py-1 px-[98px] rounded-2xl bg-primary-main-blue" onClick={() => setOpen(true)}>+ Add</button>
-                        <Dialog open={open}>
-                            <DialogContent className="bg-white max-w-[792px] rounded-xl">
-                                <DialogHeader className="border-b border-primary-border-slate-200 py-5 px-6 flex justify-between">
-                                    <DialogTitle className="text-xl font-semibold">Add record</DialogTitle>
-                                    <div>
-                                        <X onClick={() => setOpen(false)} className="hover:cursor-pointer" />
-                                        <DialogDescription></DialogDescription>
-                                    </div>
-                                </DialogHeader>
-                                <div className="flex gap-6">
-                                    <div className="flex flex-col gap-6">
-                                        <div className="flex">
-                                            {types.map((type) =>
-                                                <button key={type.key} style={active === type.value ? { backgroundColor: type.color } : { backgroundColor: type.basecolor }} className="py-2 px-14 rounded-[20px] text-base font-normal -primary-text-100 text-primary-text-base" onClick={() => { setActive(type.value) }}> {type.name} </button>)}
-                                        </div>
-                                        <div className="flex  flex-col gap-6">
-                                            <Input type="number" placeholder="₮ 000.00" className="pt-6 pr-[62px] pb-3 pl-4 w-[348px]" onChange={(e) => setAmount(e.target.value)} value={amount} />
-                                            <div className="grid w-full max-w-sm items-center gap-1.5">
-                                                <Label htmlFor="category">Category</Label>
-                                                <Select onValueChange={setIconId} >
-
-                                                    <SelectTrigger className="w-[348px] py-3">
-                                                        <SelectValue placeholder="Find or choose category" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className="bg-white w-[348px]">
-                                                        <SelectGroup>
-                                                            <SelectLabel>
-                                                                <button className="flex gap-3 items-center"> <CirclePlus className="text-primary-main-blue" /> Add category</button>
-                                                            </SelectLabel>
-
-                                                            {categories.map((cat) => (
-                                                                <SelectItem key={cat.key} value={cat.id}>
-
-                                                                    <div className="flex items-center gap-3" >
-                                                                        <IconConverter iconname={cat.icon} style={{ color: cat.color }} />
-                                                                        <div className="text-base font-normal">{cat.name}</div>
-                                                                    </div>
-                                                                </SelectItem>
-                                                            )
-                                                            )}
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                            <div className="flex gap-3 w-[348px]">
-                                                <div className="grid w-full max-w-sm items-center gap-1.5">
-                                                    <Label htmlFor="category">Date</Label>
-                                                    <Popover>
-                                                        <PopoverTrigger asChild>
-                                                            <Button
-                                                                variant={"outline"}
-                                                                className={cn(
-                                                                    "w-[168px] h-[48px] justify-start text-left font-normal rounded-xl",
-                                                                    !date && "text-muted-foreground"
-                                                                )}
-                                                            >
-                                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                                {date ? format(date, "PPP") : <span>{dayjs().format('YYYY-MM-DD')}</span>}
-                                                            </Button>
-                                                        </PopoverTrigger>
-                                                        <PopoverContent className="w-auto p-0 bg-white">
-                                                            <Calendar
-                                                                mode="single"
-                                                                selected={date}
-                                                                onSelect={setDate}
-                                                                initialFocus
-                                                            />
-                                                        </PopoverContent>
-                                                    </Popover>
-                                                </div>
-                                                <div className="grid w-full max-w-sm items-center gap-1.5">
-                                                    <Label htmlFor="category">Time</Label>
-                                                    <input type="time" className="w-[168px] py-3 pl-4 border border-black rounded-xl " placeholder={dayjs().format(`HH.mm.A`)} onChange={(e) => setTime(e.target.value)} value={time} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <button className="py-2 px-[132.5px] rounded-xl text-white bg-primary-main-blue" onClick={addRecords}>Add record</button>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col gap-6">
-                                        <div className="grid w-full max-w-sm items-center gap-1.5">
-                                            <Label htmlFor="category">Payee</Label>
-                                            <Input type="text" placeholder="Write here" className="w-[348px] py-3 pl-4" onChange={(e) => setPayee(e.target.value)} value={payee} />
-                                        </div>
-                                        <div className="grid w-full max-w-sm items-center gap-1.5">
-                                            <Label htmlFor="category">Note</Label>
-                                            <Textarea placeholder="Write here" className="pb-[210px] rounded-xl" onChange={(e) => setNote(e.target.value)} value={note} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
+                        <Sidebar/>
+                       <Addrecord types={types} amount={amount} setIconId={setIconId} categories={categories} addRecords={addRecords} activestate={activestate} setActive={setActive} date={date} setDate={setDate} time={time} payee={payee} note={note} setPayee={setPayee} setNote={setNote} setAmount={setAmount} setTime={setTime} editExpense={editExpense} editingRecords={editingRecords}/>
                     </div>
                     <label className="input input-bordered flex items-center gap-2">
                         <input type="text" className="grow" placeholder="Search" />
@@ -593,7 +499,7 @@ export default function Records() {
                             <button className="font-normal text-base text-primary-text-base/20">Clear</button>
                         </div>
                         {categories.map((category) =>
-                            <button key={category.key} className="flex justify-between items-center">
+                            <button key={category.id} className="flex justify-between items-center">
                                 <div className="flex gap-2 items-center">
                                     <div style={{ color: category.color }}>
                                         <IconConverterSecond iconName={category.icon} />
@@ -606,47 +512,8 @@ export default function Records() {
                             </button>
                         )}
                         <div>
-                            <button onClick={() => setOpened(true)} className="flex gap-2 text-base font-normal text-primary-text-base items-center"><Plus size={20} color="#0166FF" />Add category</button>
-                            <Dialog open={opened} >
-                                <DialogContent className="bg-white border rounded-xl max-w-[494px]">
-                                    <DialogHeader className=" border-b border-primary-border-slate-200 py-5 px-4 flex justify-between">
-                                        <DialogTitle>Add category</DialogTitle>
-                                        <DialogDescription>
-                                            <X onClick={() => setOpened(false)} className="hover:cursor-pointer" />
-                                        </DialogDescription>
-                                    </DialogHeader>
-
-                                    <div className="flex gap-3">
-                                        <Popover >
-                                            <PopoverTrigger className="py-3 px-4 border rounded-xl flex gap-2" style={{ color: selectedColorValue }}>{selectedIcon} <ChevronDown /></PopoverTrigger>
-                                            <PopoverContent className="bg-white p-6 flex flex-col gap-6">
-                                                <div className=" grid grid-cols-6 gap-6 ">
-                                                    {icons.map((icon) => (
-                                                        <div key={icon.key} value={icon.value} onClick={() => {
-                                                            setSelectedicon(icon.iconi),
-                                                                setSelectedIconi(icon.value)
-                                                        }
-                                                        } className="w-6 h-6">
-                                                            {icon.iconi}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <hr></hr>
-                                                <div className="flex gap-3">
-                                                    {colors.map((color) =>
-                                                        <div key={color.key} className="w-6 h-6 rounded-full" style={{ backgroundColor: color.value }} onClick={() => { setSelectedColor(color.name), setSelectedColorValue(color.value) }}>{selectedColor === color.name && <Check />}</div>
-                                                    )}
-                                                </div>
-
-                                            </PopoverContent>
-                                        </Popover>
-                                        <Input type="text" placeholder="Name" value={selectedName} id="Name" onChange={(e) => setselectedName(e.target.value)} className="py-3 pl-4 pr-[170px]" />
-                                    </div>
-
-                                    <button className="bg-primary-green-600 rounded-xl hover:bg-green-900 text-white hover:text-white py-3" onClick={addcategories}>Add category</button>
-
-                                </DialogContent>
-                            </Dialog>
+                            <Addcategorybutton/>
+                            <Addcategory icons={icons} colors={colors} addcategories={addcategories} selectedColorValue={selectedColorValue} selectedIcon={selectedIcon} selectedColor={selectedColor} selectedName={selectedName} setSelectedicon={setSelectedicon} setSelectedIconi={setSelectedIconi} setSelectedColor={setSelectedColor} setSelectedColorValue={setSelectedColorValue} setselectedName={setselectedName}/>
 
                         </div>
                     </div>
@@ -669,20 +536,19 @@ export default function Records() {
                 <div className="flex-1 p-6 flex flex-col gap-6">
                     <div className="flex  justify-between">
                         <div className="pl-4">
-                        {/* <DateRangePicker
-                            ranges={[selectionRange]}
-                            onChange={this.handleSelect}
-                         /> */}
+                        <DatePickerWithRange />
                         </div>
                         <div>
-                            <Select>
+                            <Select onValueChange={setNewest}>
                                 <SelectTrigger className="w-[180px]">
                                     <SelectValue placeholder="Select" />
                                 </SelectTrigger>
                                 <SelectContent>
+                                   
                                     <SelectGroup>
-                                        <SelectLabel>Select</SelectLabel>
-                                        <SelectItem value="apple">Newest lately</SelectItem>
+                                    {filterByDates.map ((filterbydate) =>
+                                        <SelectItem key={filterByDates.value} value={filterbydate.value}>{filterbydate.datefilter}</SelectItem>
+                                    )}
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
@@ -708,15 +574,8 @@ export default function Records() {
 
                             {sortedRecordings.map((record, index, array) =>
 
-                                <div>
-
-
+                                <div key={record.id}>
                                     <div className={`text-base font-semibold text-black ${array[index].date !== (index > 0 ? array[index - 1].date : '') ? '' : 'hidden'}`}>{changeDate(record.date)}</div>
-
-
-
-
-
                                     <div className={`flex justify-between items-center bg-white py-3 px-6 rounded-xl `}>
 
                                         <div className="flex items-center gap-4">
@@ -745,7 +604,7 @@ export default function Records() {
 
                                         <div className={`${record.alltransactiontypes == 'expense' ? "text-red-700" : "text-green-600"}`}>{record.amount}₮</div>
                                         <div className={`flex gap-4 ${selectedCheckbox.includes(record.id) ? "block" : "hidden"}`}>
-                                            <Pencil size={28} onClick={() => editExpense(record.id)} />
+                                            <Pencil size={28} onClick={() => setEditingRecords(record)} />
                                             <Trash2 size={28} onClick={() => deleteExpense(record.id)} />
                                         </div>
                                     </div>
