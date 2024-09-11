@@ -228,12 +228,32 @@ export default function Records() {
     const [recordings, setRecordings] = useState([])
     const [selectedCheckbox, setSelectedCheckbox] = useState([])
     const [editingRecords, setEditingRecords] = useState()
+    const [search, setSearch] = useState()
 
-    const sortedRecordings = recordings.sort((a, b) => {
-        if (a.date > b.date) {
-            return -1
-        }
-    })
+    // function sortByNewest() {
+    //     const sortedRecordings = recordings.sort((a, b) => {
+    //         if (a.date > b.date) {
+    //             return -1
+    //         }
+    //     })
+    //     setRecordings(sortedRecordings)
+    //     }
+
+
+    // function sortByLatest () {
+    //     const sortedRecordings = recordings.sort((a, b) => {
+    //         if (a.date < b.date) {
+    //             return -1
+    //         }
+    //     })
+    //     setRecordings(sortedRecordings)
+    // }
+
+    const totalPrice = recordings.reduce((accumulator ,recording) => {
+        return accumulator += Number(recording.amount);
+      }, 0)
+     
+    
     const searchParams = useSearchParams()
     const idedited = searchParams.get('id')
 
@@ -262,12 +282,12 @@ export default function Records() {
     }
 
     function Allchecked () {
-        if (sortedRecordings.length === selectedCheckbox.length){
+        if (recordings.length === selectedCheckbox.length){
             setSelectedCheckbox([])
            
         }
         else  {
-            sortedRecordings.map ((rec) =>(
+            recordings.map ((rec) =>(
                 setSelectedCheckbox(s =>[...s, rec.id])
             )
             )
@@ -331,8 +351,7 @@ export default function Records() {
         })
         resetRecords()
 
-    }
-   
+    }   
     useEffect (() => {
        
         if (editingRecords) {
@@ -364,7 +383,7 @@ export default function Records() {
 
         }
         else  {
-            fetch(`http://localhost:4000/types/${typename}/${categoryname}`)
+            fetch(`http://localhost:4000/types?typename=${typename}&categoryname=${categoryname}`)
                 .then((res) => { return res.json() })
                 .then((data) => setRecordings(data))
 
@@ -398,7 +417,7 @@ export default function Records() {
     }
 
    
-   console.log (editExpense)
+
     function editExpense() {
        
         fetch(`http://localhost:4000/recordings/${idedited}`, {
@@ -435,6 +454,12 @@ export default function Records() {
         }
     }
 
+    function searchBy() {
+        fetch(`http://localhost:4000/search/:${search}`)
+        .then((res) => { return res.json() })
+        .then((data) => setRecordings(data))
+    }
+
     const typessidebar = [
         {
             value: null,
@@ -453,11 +478,6 @@ export default function Records() {
         },
     ]
 
-
-
-
-
-
     return (
         <div className=" max-w-screen-lg m-auto flex flex-col gap-6">
             <Header />
@@ -469,7 +489,7 @@ export default function Records() {
                        <Addrecord types={types} amount={amount} setIconId={setIconId} categories={categories} addRecords={addRecords} activestate={activestate} setActive={setActive} date={date} setDate={setDate} time={time} payee={payee} note={note} setPayee={setPayee} setNote={setNote} setAmount={setAmount} setTime={setTime} editExpense={editExpense} editingRecords={editingRecords}/>
                     </div>
                     <label className="input input-bordered flex items-center gap-2">
-                        <input type="text" className="grow" placeholder="Search" />
+                        <input type="text" className="grow" placeholder="Search" onChange={(e) => setSearch(e.target.value)} value={search} onClick={()=> searchBy()}/>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 16 16"
@@ -539,7 +559,7 @@ export default function Records() {
                         <DatePickerWithRange />
                         </div>
                         <div>
-                            <Select onValueChange={setNewest}>
+                            <Select onValueChange={setNewest} >
                                 <SelectTrigger className="w-[180px]">
                                     <SelectValue placeholder="Select" />
                                 </SelectTrigger>
@@ -547,7 +567,7 @@ export default function Records() {
                                    
                                     <SelectGroup>
                                     {filterByDates.map ((filterbydate) =>
-                                        <SelectItem key={filterByDates.value} value={filterbydate.value}>{filterbydate.datefilter}</SelectItem>
+                                        <SelectItem key={filterByDates.value} value={filterbydate.value}>{filterbydate.datefilter} </SelectItem>
                                     )}
                                     </SelectGroup>
                                 </SelectContent>
@@ -566,13 +586,13 @@ export default function Records() {
                                 Select all
                             </label>
                         </div>
-                        <div>35500</div>
+                        <div>{totalPrice}</div>
                     </div>
                     <div className="flex flex-col gap-3" >
 
                         <div>
 
-                            {sortedRecordings.map((record, index, array) =>
+                            {recordings.map((record, index, array) =>
 
                                 <div key={record.id}>
                                     <div className={`text-base font-semibold text-black ${array[index].date !== (index > 0 ? array[index - 1].date : '') ? '' : 'hidden'}`}>{changeDate(record.date)}</div>

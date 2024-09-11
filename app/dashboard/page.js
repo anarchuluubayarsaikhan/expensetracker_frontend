@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import { Chart } from "@/components/chart";
 
 
 const cards =[
@@ -24,12 +25,16 @@ const cards =[
 ]
 
 
+
 export default function Dashboard () {
     const [newestfirstrecordings, setNewestfFirstRecordings] = useState([])
+    
    
     const nowHour = dayjs().format('HH:mm')
     const [amountTotal, setAmountTotal] =useState("")
     console.log (amountTotal)
+
+  
     // const [expenseTotal, setExpenseTotal] =useState("")
     
     // function NewestFirst () {
@@ -91,7 +96,6 @@ export default function Dashboard () {
                     {cards.map ((card) =>
                          <Card className="bg-white rounded-xl flex-1" key={card.color}>
                             
-                            
                    
                             <>
                                 <CardHeader>
@@ -128,7 +132,7 @@ export default function Dashboard () {
                                     <CardDescription></CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex gap-4 flex-col">
-
+                                <Chart/>
                                 </CardContent>
                 </Card>
                 <Card className="bg-white rounded-xl flex-1">
