@@ -230,6 +230,8 @@ export default function Records() {
     const [editingRecords, setEditingRecords] = useState()
     const [search, setSearch] = useState()
 
+    
+
     // function sortByNewest() {
     //     const sortedRecordings = recordings.sort((a, b) => {
     //         if (a.date > b.date) {
@@ -256,6 +258,8 @@ export default function Records() {
     
     const searchParams = useSearchParams()
     const idedited = searchParams.get('id')
+    const daterange = searchParams.get('daterange')
+    console.log (daterange)
 
     const filterByDates = [
         {datefilter: "Newest lately", 
@@ -383,9 +387,10 @@ export default function Records() {
 
         }
         else  {
-            fetch(`http://localhost:4000/types?typename=${typename}&categoryname=${categoryname}`)
+            fetch(`http://localhost:4000/types?typename=${typename}&categoryname=${categoryname}&daterange=${daterange}`)
                 .then((res) => { return res.json() })
                 .then((data) => setRecordings(data))
+                console.log(daterange)
 
         }
 

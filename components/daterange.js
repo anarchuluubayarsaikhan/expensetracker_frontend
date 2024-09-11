@@ -18,7 +18,7 @@ export function DatePickerWithRange({
     className
   } ) {
     const [date, setDate] = useQueryState('daterange')
-    console.log (date)
+   console.log (date)
      
    
     return (
