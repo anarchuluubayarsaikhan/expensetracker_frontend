@@ -126,7 +126,7 @@ export default function Records() {
   }
 
   function loadCategories() {
-    fetch("https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/categories")
+    fetch("expensetracker-frontend-delta.vercel.app/categories")
       .then((res) => {
         return res.json();
       })
@@ -139,14 +139,14 @@ export default function Records() {
 
   function loadList() {
     if (typename === null) {
-      fetch("https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/recordings")
+      fetch("expensetracker-frontend-delta.vercel.app/recordings")
         .then((res) => {
           return res.json();
         })
         .then((data) => setRecordings(data));
     } else {
       fetch(
-        `https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/types?typename=${typename ?? ""}&categoryname=${
+        `expensetracker-frontend-delta.vercel.app/types?typename=${typename ?? ""}&categoryname=${
           categoryname || ""
         }&daterange=${daterange || ""}`
       )
@@ -176,7 +176,7 @@ export default function Records() {
   }
 
   function addcategories() {
-    fetch("https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/categories", {
+    fetch("expensetracker-frontend-delta.vercel.app/categories", {
       method: "POST",
       body: JSON.stringify({
         name: selectedName,
@@ -195,7 +195,7 @@ export default function Records() {
   }
 
   function addRecords() {
-    fetch("https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/recordings", {
+    fetch("expensetracker-frontend-delta.vercel.app/recordings", {
       method: "POST",
       body: JSON.stringify({
         alltype: activestate,
@@ -231,7 +231,7 @@ export default function Records() {
   }, [editingRecords]);
 
   function editExpense() {
-    fetch(`https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/recordings/${idedited}`, {
+    fetch(`expensetracker-frontend-delta.vercel.app/recordings/${idedited}`, {
       method: "PUT",
       body: JSON.stringify({
         alltype: activestate,
@@ -252,7 +252,7 @@ export default function Records() {
     });
   }
   function deleteExpense(id) {
-    fetch(`https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/recordings/${id}`, {
+    fetch(`expensetracker-frontend-delta.vercel.app/recordings/${id}`, {
       method: "DELETE",
     }).then(() => {
       loadCategories();
