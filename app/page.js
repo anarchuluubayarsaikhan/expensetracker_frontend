@@ -176,7 +176,7 @@ export default function Records() {
   }
 
   function addcategories() {
-    fetch("expensetracker-frontend-delta.vercel.app/categories", {
+    fetch("expense-backend-umber.vercel.app/categories", {
       method: "POST",
       body: JSON.stringify({
         name: selectedName,
@@ -195,7 +195,7 @@ export default function Records() {
   }
 
   function addRecords() {
-    fetch("expensetracker-frontend-delta.vercel.app/recordings", {
+    fetch("expense-backend-umber.vercel.app/recordings", {
       method: "POST",
       body: JSON.stringify({
         alltype: activestate,
@@ -231,7 +231,7 @@ export default function Records() {
   }, [editingRecords]);
 
   function editExpense() {
-    fetch(`expensetracker-frontend-delta.vercel.app/recordings/${idedited}`, {
+    fetch(`expense-backend-umber.vercel.app/recordings/${idedited}`, {
       method: "PUT",
       body: JSON.stringify({
         alltype: activestate,
@@ -252,7 +252,7 @@ export default function Records() {
     });
   }
   function deleteExpense(id) {
-    fetch(`expensetracker-frontend-delta.vercel.app/recordings/${id}`, {
+    fetch(`expense-backend-umber.vercel.app/recordings/${id}`, {
       method: "DELETE",
     }).then(() => {
       loadCategories();
