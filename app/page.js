@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import { useQueryState } from "nuqs";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Header } from "@/components/header";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,8 +16,6 @@ import { Addrecord } from "@/components/dialog";
 import { Addcategory } from "@/components/addcategory";
 import { Sidebar } from "@/components/sidebar";
 import { Addcategorybutton } from "@/components/categorybutton";
-import { useRouter } from "next/navigation";
-
 import { Checkbox } from "@/components/ui/checkbox";
 import { Geticons } from "@/lib/icons";
 import {
@@ -126,7 +124,7 @@ export default function Records() {
   }
 
   function loadCategories() {
-    fetch("expense-backend-umber.vercel.app/categories")
+    fetch(process.env.NEXT_PUBLIC_API_URL+`/categories`)
       .then((res) => {
         return res.json();
       })
@@ -139,14 +137,14 @@ export default function Records() {
 
   function loadList() {
     if (typename === null) {
-      fetch("expense-backend-umber.vercel.app/recordings")
+      fetch(process.env.NEXT_PUBLIC_API_URL+`/recordings`)
         .then((res) => {
           return res.json();
         })
         .then((data) => setRecordings(data));
     } else {
       fetch(
-        `expense-backend-umber.vercel.app/types?typename=${typename ?? ""}&categoryname=${
+        process.env.NEXT_PUBLIC_API_URL+`/types?typename=${typename ?? ""}&categoryname=${
           categoryname || ""
         }&daterange=${daterange || ""}`
       )
@@ -176,7 +174,7 @@ export default function Records() {
   }
 
   function addcategories() {
-    fetch("expense-backend-umber.vercel.app/categories", {
+    fetch(process.env.NEXT_PUBLIC_API_URL+`/categories`, {
       method: "POST",
       body: JSON.stringify({
         name: selectedName,
@@ -195,7 +193,7 @@ export default function Records() {
   }
 
   function addRecords() {
-    fetch("expense-backend-umber.vercel.app/recordings", {
+    fetch(process.env.NEXT_PUBLIC_API_URL+`/recordings`, {
       method: "POST",
       body: JSON.stringify({
         alltype: activestate,
@@ -231,7 +229,7 @@ export default function Records() {
   }, [editingRecords]);
 
   function editExpense() {
-    fetch(`expense-backend-umber.vercel.app/recordings/${idedited}`, {
+    fetch(process.env.NEXT_PUBLIC_API_URL+`/recordings/${idedited}`, {
       method: "PUT",
       body: JSON.stringify({
         alltype: activestate,
@@ -252,7 +250,7 @@ export default function Records() {
     });
   }
   function deleteExpense(id) {
-    fetch(`expense-backend-umber.vercel.app/recordings/${id}`, {
+    fetch(process.env.NEXT_PUBLIC_API_URL+`/recordings/${id}`, {
       method: "DELETE",
     }).then(() => {
       loadCategories();
