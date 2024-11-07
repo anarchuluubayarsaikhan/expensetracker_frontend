@@ -126,7 +126,7 @@ export default function Records() {
   }
 
   function loadCategories() {
-    fetch("expensetracker-frontend-delta.vercel.app/categories")
+    fetch("expense-backend-umber.vercel.app/categories")
       .then((res) => {
         return res.json();
       })
@@ -139,14 +139,14 @@ export default function Records() {
 
   function loadList() {
     if (typename === null) {
-      fetch("expensetracker-frontend-delta.vercel.app/recordings")
+      fetch("expense-backend-umber.vercel.app/recordings")
         .then((res) => {
           return res.json();
         })
         .then((data) => setRecordings(data));
     } else {
       fetch(
-        `expensetracker-frontend-delta.vercel.app/types?typename=${typename ?? ""}&categoryname=${
+        `expense-backend-umber.vercel.app/types?typename=${typename ?? ""}&categoryname=${
           categoryname || ""
         }&daterange=${daterange || ""}`
       )
