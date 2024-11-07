@@ -126,7 +126,7 @@ export default function Records() {
   }
 
   function loadCategories() {
-    fetch("http://localhost:4000/categories")
+    fetch("https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/categories")
       .then((res) => {
         return res.json();
       })
@@ -139,14 +139,14 @@ export default function Records() {
 
   function loadList() {
     if (typename === null) {
-      fetch("http://localhost:4000/recordings")
+      fetch("https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/recordings")
         .then((res) => {
           return res.json();
         })
         .then((data) => setRecordings(data));
     } else {
       fetch(
-        `http://localhost:4000/types?typename=${typename ?? ""}&categoryname=${
+        `https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/types?typename=${typename ?? ""}&categoryname=${
           categoryname || ""
         }&daterange=${daterange || ""}`
       )
@@ -176,7 +176,7 @@ export default function Records() {
   }
 
   function addcategories() {
-    fetch("http://localhost:4000/categories", {
+    fetch("https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/categories", {
       method: "POST",
       body: JSON.stringify({
         name: selectedName,
@@ -195,7 +195,7 @@ export default function Records() {
   }
 
   function addRecords() {
-    fetch("http://localhost:4000/recordings", {
+    fetch("https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/recordings", {
       method: "POST",
       body: JSON.stringify({
         alltype: activestate,
@@ -231,7 +231,7 @@ export default function Records() {
   }, [editingRecords]);
 
   function editExpense() {
-    fetch(`http://localhost:4000/recordings/${idedited}`, {
+    fetch(`https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/recordings/${idedited}`, {
       method: "PUT",
       body: JSON.stringify({
         alltype: activestate,
@@ -252,7 +252,7 @@ export default function Records() {
     });
   }
   function deleteExpense(id) {
-    fetch(`http://localhost:4000/recordings/${id}`, {
+    fetch(`https://expense-backend-5msddhhy1-anarchuluu-bayarsaikhans-projects.vercel.app/recordings/${id}`, {
       method: "DELETE",
     }).then(() => {
       loadCategories();
